@@ -85,10 +85,10 @@ export default function Home() {
             className="fixed top-4 right-4 z-50 glass-intense p-4 rounded-lg"
           >
             <div className="text-mint-green font-space font-semibold">
-              🎉 Rice Mode {theme === 'riced' ? 'Activated' : 'Deactivated'}!
+              {theme === 'riced' ? '🐧 Arch Mode Enabled' : '🎨 Normal Mode Restored'}
             </div>
             <div className="text-white text-sm">
-              {theme === 'riced' ? 'Welcome to Arch aesthetic...' : 'Back to normal mode'}
+              {theme === 'riced' ? 'Terminal aesthetic activated' : 'Clean design restored'}
             </div>
           </motion.div>
         )}
@@ -123,15 +123,15 @@ export default function Home() {
         <ContactSection />
       </div>
 
-      {/* Floating easter egg hints */}
+      {/* Floating easter egg hints - much more subtle */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 5, duration: 2 }}
-        className="fixed bottom-4 left-4 text-xs text-gray-500 font-mono opacity-30 hover:opacity-100 transition-opacity duration-300 z-30"
+        transition={{ delay: 10, duration: 3 }}
+        className="fixed bottom-2 left-2 text-xs text-gray-600 font-mono opacity-10 hover:opacity-60 transition-opacity duration-1000 z-30 cursor-default"
+        title="Il y a des secrets cachés partout... Les vieux codes de triche marchent toujours 🎮"
       >
-        <div>Hidden features everywhere...</div>
-        <div>Try the Konami code: ↑↑↓↓←→←→BA</div>
+        <div>features.hidden = true</div>
       </motion.div>
 
       {/* Ambient background effects */}

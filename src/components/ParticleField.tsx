@@ -7,34 +7,40 @@ import * as THREE from 'three';
 
 function Particles() {
   const ref = useRef<THREE.Points>(null);
-  const [positions, colors] = useMemo(() => {
-    const positions = new Float32Array(2000 * 3);
-    const colors = new Float32Array(2000 * 3);
+  const [positions, colors, scales] = useMemo(() => {
+    const positions = new Float32Array(1500 * 3);
+    const colors = new Float32Array(1500 * 3);
+    const scales = new Float32Array(1500);
     
-    for (let i = 0; i < 2000; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+    for (let i = 0; i < 1500; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 25;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 25;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 25;
       
       const color = new THREE.Color();
-      const hue = Math.random() * 0.3 + 0.5; // cyan to magenta range
-      color.setHSL(hue, 0.8, 0.6);
+      const hue = Math.random() * 0.4 + 0.45; // More refined color range
+      color.setHSL(hue, 0.7, 0.5 + Math.random() * 0.3);
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
+      
+      scales[i] = Math.random() * 0.5 + 0.5;
     }
     
-    return [positions, colors];
+    return [positions, colors, scales];
   }, []);
 
   useFrame((state) => {
     if (ref.current) {
-      ref.current.rotation.x = state.clock.elapsedTime * 0.1;
-      ref.current.rotation.y = state.clock.elapsedTime * 0.15;
+      // Slower, more organic rotation
+      ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.05) * 0.2;
+      ref.current.rotation.y = state.clock.elapsedTime * 0.08;
       
       const positions = ref.current.geometry.attributes.position.array as Float32Array;
       for (let i = 0; i < positions.length; i += 3) {
-        positions[i + 1] += Math.sin(state.clock.elapsedTime + positions[i]) * 0.001;
+        // More organic floating motion
+        positions[i + 1] += Math.sin(state.clock.elapsedTime * 0.5 + positions[i] * 0.5) * 0.002;
+        positions[i] += Math.cos(state.clock.elapsedTime * 0.3 + positions[i + 2] * 0.3) * 0.001;
       }
       ref.current.geometry.attributes.position.needsUpdate = true;
     }
@@ -45,10 +51,11 @@ function Particles() {
       <PointMaterial
         transparent
         vertexColors
-        size={0.02}
+        size={0.015}
         sizeAttenuation={true}
         alphaTest={0.001}
-        opacity={0.8}
+        opacity={0.6}
+        blending={THREE.AdditiveBlending}
       />
     </Points>
   );

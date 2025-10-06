@@ -74,9 +74,13 @@ export default function HeroSection() {
         animate="visible"
       >
         {/* Name */}
-        <motion.div variants={itemVariants}>
-          <h1 className="text-8xl md:text-9xl lg:text-[12rem] font-space font-bold tracking-wider mb-8">
-            <span className="holo-text">KHALID</span>
+        <motion.div 
+          variants={itemVariants}
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <h1 className="text-8xl md:text-9xl lg:text-[12rem] font-space font-bold tracking-wider mb-8 cursor-default">
+            <span className="holo-text hover:brightness-125 transition-all duration-500">KHALID</span>
           </h1>
         </motion.div>
 
@@ -110,27 +114,33 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
         >
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="glass-intense px-8 py-4 text-white font-space font-medium glow-hover transition-all duration-300 min-w-[180px]"
+            className="glass-intense px-8 py-4 text-white font-space font-medium glow-hover transition-all duration-300 min-w-[180px] group relative overflow-hidden"
+            onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            About
+            <span className="relative z-10">About</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-holo-cyan/20 to-holo-magenta/20 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
           </motion.button>
           
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="glass-intense px-8 py-4 text-white font-space font-medium glow-hover transition-all duration-300 min-w-[180px]"
+            className="glass-intense px-8 py-4 text-white font-space font-medium glow-hover transition-all duration-300 min-w-[180px] group relative overflow-hidden"
+            onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Projects
+            <span className="relative z-10">Projects</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-holo-magenta/20 to-holo-violet/20 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
           </motion.button>
           
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="holo-border px-8 py-4 text-white font-space font-medium glow-hover transition-all duration-300 min-w-[180px] bg-deep-void"
+            className="holo-border px-8 py-4 text-white font-space font-medium glow-hover transition-all duration-300 min-w-[180px] bg-deep-void group relative overflow-hidden"
+            onClick={() => document.getElementById('terminal')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Open Terminal
+            <span className="relative z-10">Open Terminal</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-holo-cyan/10 to-holo-gold/10 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
           </motion.button>
         </motion.div>
 

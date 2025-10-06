@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getChatResponse } from '@/lib/openai'
+import { geminiService } from '@/lib/gemini'
 
 interface Message {
   id: string
@@ -13,7 +13,7 @@ interface Message {
 
 const initialMessage: Message = {
   id: '0',
-  text: "Hey there! 👋 I'm Khalid's AI assistant. Ask me anything about his projects, skills, or experience. I can also give you hints about the easter eggs hidden in this portfolio!",
+  text: "🤖 Salut ! Je suis l'assistant IA du portfolio de Khalid. Je peux te parler de ses projets, compétences, et expériences. Attention : je suis spécialisé uniquement sur Khalid ! Pour d'autres sujets, direction Gemini ou ChatGPT 😉",
   isBot: true,
   timestamp: new Date()
 }
@@ -49,11 +49,12 @@ export default function ChatBotAI() {
     }
 
     setMessages(prev => [...prev, userMessage])
+    const currentInput = inputValue
     setInputValue('')
     setIsLoading(true)
 
     try {
-      const response = await getChatResponse(inputValue)
+      const response = await geminiService.ask(currentInput)
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -66,7 +67,7 @@ export default function ChatBotAI() {
     } catch (error) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Sorry, I encountered an error. Please try again later!",
+        text: "🤔 Oups, petit bug ! Réessaie ou contacte Khalid directement si ça persiste.",
         isBot: true,
         timestamp: new Date()
       }
@@ -83,11 +84,11 @@ export default function ChatBotAI() {
   }
 
   const quickQuestions = [
-    "Tell me about Khalid's projects",
-    "What technologies does he use?",
-    "What are his hobbies?",
-    "Any CTF experience?",
-    "Hidden easter eggs?"
+    "Parle-moi des projets de Khalid",
+    "Quelles technologies il utilise ?",
+    "Il fait du freelance ?",
+    "Des expériences CTF ?",
+    "Comment le contacter ?"
   ]
 
   return (
@@ -120,7 +121,7 @@ export default function ChatBotAI() {
             <div className="flex items-center justify-between bg-gradient-to-r from-cyan-500 to-purple-500 text-white p-4 rounded-t-lg">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="font-bold">Ask Khalid AI</span>
+                <span className="font-bold">Khalid AI • Portfolio Only</span>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
