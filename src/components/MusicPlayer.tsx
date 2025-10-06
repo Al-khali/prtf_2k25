@@ -1,304 +1,228 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { defaultTracks, audioVisualizer, Track } from '@/lib/audio'
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { Track } from '@/lib/audio';
 
-export default function MusicPlayer() {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTrack, setCurrentTrack] = useState(0)
-  const [volume, setVolume] = useState(0.5)
-  const [isExpanded, setIsExpanded] = useState(false)
-  const [visualData, setVisualData] = useState<Uint8Array | null>(null)
-  const [concertMode, setConcertMode] = useState(false)
-  
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+interface MusicPlayerProps {
+  currentTrack: Track | null;
+  isPlaying: boolean;
+  volume: number;
+  isMuted: boolean;
+  currentTime: number;
+  duration: number;
+  onPlayPause: () => void;
+  onNext: () => void;
+  onPrevious: () => void;
+  onVolumeChange: (volume: number) => void;
+  onMuteToggle: () => void;
+  onSeek: (time: number) => void;
+}
 
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
+export default function MusicPlayer({
+  currentTrack,
+  isPlaying,
+  volume,
+  isMuted,
+  currentTime,
+  duration,
+  onPlayPause,
+  onNext,
+  onPrevious,
+  onVolumeChange,
+  onMuteToggle,
+  onSeek,
+}: MusicPlayerProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const progressRef = useRef<HTMLDivElement>(null);
 
-    const handleLoadedData = async () => {
-      try {
-        await audioVisualizer.setupAudio(audio)
-      } catch (error) {
-        console.log('Audio setup failed:', error)
-      }
-    }
+  // Format time as MM:SS
+  const formatTime = (seconds: number): string => {
+    if (!isFinite(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
-    audio.addEventListener('loadeddata', handleLoadedData)
-    return () => audio.removeEventListener('loadeddata', handleLoadedData)
-  }, [])
-
-  useEffect(() => {
-    if (isPlaying && visualData) {
-      drawVisualization()
-    }
-  }, [visualData, isPlaying])
-
-  useEffect(() => {
-    if (isPlaying) {
-      audioVisualizer.startVisualization((data) => {
-        setVisualData(data)
-      })
-    } else {
-      audioVisualizer.stopVisualization()
-    }
-
-    return () => audioVisualizer.stopVisualization()
-  }, [isPlaying])
-
-  const drawVisualization = () => {
-    const canvas = canvasRef.current
-    if (!canvas || !visualData) return
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const width = canvas.width
-    const height = canvas.height
-    const barWidth = width / visualData.length
+  // Handle progress bar click/drag
+  const handleProgressInteraction = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!progressRef.current || !duration) return;
     
-    ctx.clearRect(0, 0, width, height)
+    const rect = progressRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(1, x / rect.width));
+    const newTime = percentage * duration;
     
-    for (let i = 0; i < visualData.length; i++) {
-      const barHeight = (visualData[i] / 255) * height * 0.8
-      const hue = (i / visualData.length) * 360
-      
-      ctx.fillStyle = `hsl(${hue}, 100%, 50%)`
-      ctx.fillRect(i * barWidth, height - barHeight, barWidth - 1, barHeight)
-      
-      ctx.fillStyle = `hsla(${hue}, 100%, 70%, 0.3)`
-      ctx.fillRect(i * barWidth, height - barHeight - 10, barWidth - 1, 10)
-    }
-  }
+    onSeek(newTime);
+  };
 
-  const togglePlay = async () => {
-    const audio = audioRef.current
-    if (!audio) return
+  const handleMouseDown = () => setIsDragging(true);
+  const handleMouseUp = () => setIsDragging(false);
 
-    try {
-      if (isPlaying) {
-        audio.pause()
-      } else {
-        await audioVisualizer.resume()
-        await audio.play()
-      }
-      setIsPlaying(!isPlaying)
-    } catch (error) {
-      console.log('Playback failed:', error)
-    }
-  }
+  useEffect(() => {
+    const handleGlobalMouseUp = () => setIsDragging(false);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+  }, []);
 
-  const nextTrack = () => {
-    setCurrentTrack((prev) => (prev + 1) % defaultTracks.length)
-    setIsPlaying(false)
-  }
-
-  const prevTrack = () => {
-    setCurrentTrack((prev) => (prev - 1 + defaultTracks.length) % defaultTracks.length)
-    setIsPlaying(false)
-  }
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value)
-    setVolume(newVolume)
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume
-    }
-  }
-
-  const track = defaultTracks[currentTrack]
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <>
-      <motion.div
-        className="bg-gray-900 border border-green-600 rounded-lg overflow-hidden shadow-lg"
-        animate={{ 
-          width: isExpanded ? 320 : 60, 
-          height: isExpanded ? 240 : 60 
-        }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="p-2">
-          {!isExpanded ? (
-            <button
-              onClick={() => setIsExpanded(true)}
-              className="w-full h-full flex items-center justify-center text-green-400 hover:text-cyan-400 transition-colors"
-            >
-              🎵
-            </button>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative w-full max-w-2xl mx-auto"
+    >
+      {/* Glass container */}
+      <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl">
+        {/* Holographic border glow */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/20 via-violet-500/20 to-magenta-500/20 blur-xl -z-10" />
+
+        {/* Track info */}
+        <div className="mb-6 text-center">
+          {currentTrack ? (
+            <>
+              <h3 className="text-xl font-bold text-white mb-1">
+                {currentTrack.title}
+              </h3>
+              <p className="text-sm text-white/60">{currentTrack.artist}</p>
+            </>
           ) : (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-cyan-400 truncate">
-                  {track.title}
-                </h3>
-                <button
-                  onClick={() => setIsExpanded(false)}
-                  className="text-gray-400 hover:text-white transition-colors text-xs"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="text-xs text-gray-400 truncate">
-                {track.artist}
-              </div>
-
-              <canvas
-                ref={canvasRef}
-                width={280}
-                height={60}
-                className="w-full h-12 bg-black border border-gray-700 rounded"
-              />
-
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  onClick={prevTrack}
-                  className="text-green-400 hover:text-cyan-400 transition-colors"
-                >
-                  ⏮
-                </button>
-                
-                <button
-                  onClick={togglePlay}
-                  className="text-green-400 hover:text-cyan-400 transition-colors text-xl"
-                >
-                  {isPlaying ? '⏸' : '▶'}
-                </button>
-                
-                <button
-                  onClick={nextTrack}
-                  className="text-green-400 hover:text-cyan-400 transition-colors"
-                >
-                  ⏭
-                </button>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400">🔊</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
-                />
-              </div>
-
-              <button
-                onClick={() => setConcertMode(true)}
-                className="w-full py-1 text-xs bg-purple-600 hover:bg-purple-500 text-white rounded transition-colors"
-              >
-                Concert Mode
-              </button>
-            </div>
+            <p className="text-white/40">No track selected</p>
           )}
         </div>
-      </motion.div>
 
-      <audio
-        ref={audioRef}
-        src={track.file}
-        volume={volume}
-        onEnded={() => setIsPlaying(false)}
-        preload="metadata"
-      />
-
-      <AnimatePresence>
-        {concertMode && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black flex items-center justify-center"
-            onClick={() => setConcertMode(false)}
+        {/* Progress bar */}
+        <div className="mb-6">
+          <div
+            ref={progressRef}
+            className="relative h-2 bg-white/10 rounded-full cursor-pointer group"
+            onClick={handleProgressInteraction}
+            onMouseDown={handleMouseDown}
+            onMouseMove={isDragging ? handleProgressInteraction : undefined}
           >
-            <div className="text-center text-white">
-              <motion.h1
-                className="text-6xl font-bold mb-8 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
-                animate={{
-                  scale: visualData ? [1, 1.1, 1] : 1
-                }}
-                transition={{ duration: 0.5, repeat: Infinity }}
-              >
-                {track.title}
-              </motion.h1>
-              
-              <motion.div
-                className="text-2xl text-gray-300 mb-12"
-                animate={{
-                  opacity: visualData ? [0.5, 1, 0.5] : 0.5
-                }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                {track.artist}
-              </motion.div>
+            {/* Progress fill */}
+            <motion.div
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-cyan-400 via-violet-400 to-magenta-400 rounded-full"
+              style={{ width: `${progress}%` }}
+              initial={false}
+              animate={{ width: `${progress}%` }}
+            />
+            
+            {/* Progress handle */}
+            <motion.div
+              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ left: `${progress}%`, marginLeft: '-8px' }}
+              whileHover={{ scale: 1.2 }}
+            />
+          </div>
 
-              <canvas
-                ref={canvasRef}
-                width={800}
-                height={200}
-                className="mx-auto border border-cyan-400 rounded-lg bg-black/50"
-              />
+          {/* Time labels */}
+          <div className="flex justify-between mt-2 text-xs text-white/60">
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(duration)}</span>
+          </div>
+        </div>
 
-              <div className="mt-8 flex items-center justify-center gap-6">
-                <button
-                  onClick={prevTrack}
-                  className="text-4xl text-green-400 hover:text-cyan-400 transition-colors"
-                >
-                  ⏮
-                </button>
-                
-                <button
-                  onClick={togglePlay}
-                  className="text-6xl text-green-400 hover:text-cyan-400 transition-colors"
-                >
-                  {isPlaying ? '⏸' : '▶'}
-                </button>
-                
-                <button
-                  onClick={nextTrack}
-                  className="text-4xl text-green-400 hover:text-cyan-400 transition-colors"
-                >
-                  ⏭
-                </button>
-              </div>
+        {/* Controls */}
+        <div className="flex items-center justify-center gap-4 mb-6">
+          {/* Previous button */}
+          <motion.button
+            onClick={onPrevious}
+            className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            disabled={!currentTrack}
+          >
+            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+            </svg>
+          </motion.button>
 
-              <div className="mt-8 text-sm text-gray-400">
-                <p>Click anywhere to exit concert mode</p>
-                <p className="mt-2 text-yellow-400">
-                  Note: Audio files are placeholders. Replace with licensed tracks.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {/* Play/Pause button */}
+          <motion.button
+            onClick={onPlayPause}
+            className="p-4 rounded-full bg-gradient-to-r from-cyan-500 via-violet-500 to-magenta-500 hover:shadow-lg hover:shadow-violet-500/50 transition-shadow disabled:opacity-30 disabled:cursor-not-allowed"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            disabled={!currentTrack}
+          >
+            {isPlaying ? (
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            )}
+          </motion.button>
 
-      <style jsx>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background: #00ffff;
-          cursor: pointer;
-        }
-        
-        .slider::-moz-range-thumb {
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background: #00ffff;
-          cursor: pointer;
-          border: none;
-        }
-      `}</style>
-    </>
-  )
+          {/* Next button */}
+          <motion.button
+            onClick={onNext}
+            className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            disabled={!currentTrack}
+          >
+            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16 18h2V6h-2zm-11-6l8.5-6v12z" />
+            </svg>
+          </motion.button>
+        </div>
+
+        {/* Volume control */}
+        <div className="flex items-center gap-3">
+          {/* Mute button */}
+          <motion.button
+            onClick={onMuteToggle}
+            className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {isMuted || volume === 0 ? (
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+              </svg>
+            )}
+          </motion.button>
+
+          {/* Volume slider */}
+          <div className="flex-1 relative">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={isMuted ? 0 : volume * 100}
+              onChange={(e) => onVolumeChange(Number(e.target.value) / 100)}
+              className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer
+                [&::-webkit-slider-thumb]:appearance-none
+                [&::-webkit-slider-thumb]:w-3
+                [&::-webkit-slider-thumb]:h-3
+                [&::-webkit-slider-thumb]:rounded-full
+                [&::-webkit-slider-thumb]:bg-white
+                [&::-webkit-slider-thumb]:cursor-pointer
+                [&::-webkit-slider-thumb]:shadow-lg
+                [&::-moz-range-thumb]:w-3
+                [&::-moz-range-thumb]:h-3
+                [&::-moz-range-thumb]:rounded-full
+                [&::-moz-range-thumb]:bg-white
+                [&::-moz-range-thumb]:border-0
+                [&::-moz-range-thumb]:cursor-pointer"
+            />
+          </div>
+
+          {/* Volume percentage */}
+          <span className="text-xs text-white/60 w-8 text-right">
+            {Math.round((isMuted ? 0 : volume) * 100)}
+          </span>
+        </div>
+      </div>
+    </motion.div>
+  );
 }

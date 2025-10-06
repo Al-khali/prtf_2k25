@@ -1,291 +1,165 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { GlassCard } from './ui/GlassCard';
+import ContactForm from './ContactForm';
+import SocialLinks from './SocialLinks';
 
-const socialLinks = [
-  {
-    name: 'LinkedIn',
-    icon: '💼',
-    url: '#',
-    description: 'Professional network & career updates'
+const sectionVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: 'easeOut',
+    },
   },
-  {
-    name: 'GitHub',
-    icon: '🐙',
-    url: '#',
-    description: 'Code repositories & open source projects'
+};
+
+const headingVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: 'easeOut',
+    },
   },
-  {
-    name: 'SoundCloud',
-    icon: '🎵',
-    url: '#',
-    description: 'Music production & audio experiments'
+};
+
+const contentVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.6,
+      delay: 0.2,
+      ease: 'easeOut',
+    },
   },
-  {
-    name: 'Email',
-    icon: '📧',
-    url: 'mailto:khalid@example.com',
-    description: 'Direct communication channel'
-  }
-];
+};
 
 export default function ContactSection() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setSubmitted(true);
-    setFormData({ name: '', email: '', message: '' });
-    
-    setTimeout(() => setSubmitted(false), 5000);
-  };
-
   return (
-    <section className="min-h-screen py-20 px-4 flex items-center" id="contact">
-      <div className="max-w-6xl mx-auto w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-5xl md:text-6xl font-space font-bold holo-text mb-4">
-            Connect & Collaborate
-          </h2>
-          <p className="text-xl text-gray-300 font-inter">
-            Ready to build something extraordinary together?
-          </p>
-        </motion.div>
+    <section
+      id="contact"
+      className="relative min-h-screen py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+    >
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/5 to-transparent pointer-events-none" />
+      
+      {/* Animated background orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-magenta-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="space-y-6"
-          >
-            <div className="glass-intense p-8 rounded-2xl">
-              <h3 className="text-2xl font-space font-semibold text-white mb-6">
-                Send a Message
-              </h3>
-              
-              {submitted ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-8"
-                >
-                  <div className="text-6xl mb-4">✅</div>
-                  <h4 className="text-xl font-space font-semibold text-mint-green mb-2">
-                    Message Sent!
-                  </h4>
-                  <p className="text-gray-300">
-                    Thanks for reaching out. I'll get back to you soon!
+      <div className="relative max-w-4xl mx-auto">
+        <motion.div
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-100px' }}
+        >
+          {/* Section heading */}
+          <motion.div variants={headingVariants} className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-cyan-400 via-magenta-400 to-violet-400 bg-clip-text text-transparent animate-gradient">
+                Get In Touch
+              </span>
+            </h2>
+            <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
+              Have a project in mind or just want to chat about data, AI, or indie games? 
+              Drop me a message and let&apos;s build something amazing together.
+            </p>
+          </motion.div>
+
+          {/* Main content card */}
+          <motion.div variants={contentVariants}>
+            <GlassCard className="p-8 md:p-12">
+              <div className="grid md:grid-cols-2 gap-12">
+                {/* Left column - Form */}
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Send a Message</h3>
+                  <p className="text-white/60 mb-6">
+                    Fill out the form and I&apos;ll get back to you within 24 hours.
                   </p>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                  <ContactForm />
+                </div>
+
+                {/* Right column - Social links and info */}
+                <div className="space-y-8">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 bg-void-darker border border-glass-border rounded-lg text-white placeholder-gray-400 focus:border-holo-cyan focus:outline-none transition-colors duration-300"
-                      placeholder="Your name"
-                    />
+                    <h3 className="text-2xl font-bold text-white mb-2">Connect</h3>
+                    <p className="text-white/60 mb-6">
+                      Find me on these platforms or reach out directly.
+                    </p>
+                    <SocialLinks />
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 bg-void-darker border border-glass-border rounded-lg text-white placeholder-gray-400 focus:border-holo-cyan focus:outline-none transition-colors duration-300"
-                      placeholder="your.email@example.com"
-                    />
+
+                  {/* Additional info */}
+                  <div className="pt-8 border-t border-white/10">
+                    <h4 className="text-lg font-semibold text-cyan-300 mb-3">
+                      What I&apos;m Looking For
+                    </h4>
+                    <ul className="space-y-2 text-white/70">
+                      <li className="flex items-start gap-2">
+                        <span className="text-cyan-400 mt-1">→</span>
+                        <span>Data engineering & pipeline architecture projects</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-cyan-400 mt-1">→</span>
+                        <span>ML/AI implementation and consulting</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-cyan-400 mt-1">→</span>
+                        <span>Creative collaborations in music & game dev</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-cyan-400 mt-1">→</span>
+                        <span>Open source contributions</span>
+                      </li>
+                    </ul>
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Message
-                    </label>
-                    <textarea
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      required
-                      rows={5}
-                      className="w-full px-4 py-3 bg-void-darker border border-glass-border rounded-lg text-white placeholder-gray-400 focus:border-holo-cyan focus:outline-none transition-colors duration-300 resize-none"
-                      placeholder="Tell me about your project, ideas, or just say hello..."
-                    />
+
+                  {/* Fun fact */}
+                  <div className="pt-8 border-t border-white/10">
+                    <div className="bg-gradient-to-r from-cyan-500/10 to-magenta-500/10 border border-cyan-500/20 rounded-lg p-4">
+                      <p className="text-sm text-white/80 font-mono">
+                        <span className="text-cyan-400">$</span> cat fun_fact.txt
+                      </p>
+                      <p className="text-sm text-white/60 mt-2">
+                        I&apos;m usually online late at night (EST), fueled by coffee and lo-fi beats. 
+                        Best time to catch me for a quick chat!
+                      </p>
+                    </div>
                   </div>
-                  
-                  <motion.button
-                    type="submit"
-                    disabled={isSubmitting}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full holo-border py-4 text-white font-space font-medium glow-hover transition-all duration-300 bg-deep-void disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <div className="w-4 h-4 border-2 border-holo-cyan border-t-transparent rounded-full animate-spin"></div>
-                        Sending...
-                      </span>
-                    ) : (
-                      'Send Message'
-                    )}
-                  </motion.button>
-                </form>
-              )}
-            </div>
+                </div>
+              </div>
+            </GlassCard>
           </motion.div>
 
-          {/* Social Links & Info */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="space-y-6"
+          {/* Footer */}
+          <motion.footer
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-16 text-center"
           >
-            {/* Quick Info */}
-            <div className="glass-intense p-8 rounded-2xl">
-              <h3 className="text-2xl font-space font-semibold text-white mb-6">
-                Let's Connect
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-mint-green to-glacier-blue flex items-center justify-center text-2xl">
-                    🌍
-                  </div>
-                  <div>
-                    <h4 className="font-space font-medium text-white">Location</h4>
-                    <p className="text-gray-300 text-sm">France, Europe</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-holo-magenta to-holo-violet flex items-center justify-center text-2xl">
-                    ⏰
-                  </div>
-                  <div>
-                    <h4 className="font-space font-medium text-white">Availability</h4>
-                    <p className="text-gray-300 text-sm">Open for consulting & collaboration</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-holo-cyan to-holo-gold flex items-center justify-center text-2xl">
-                    ⚡
-                  </div>
-                  <div>
-                    <h4 className="font-space font-medium text-white">Response Time</h4>
-                    <p className="text-gray-300 text-sm">Usually within 24 hours</p>
-                  </div>
-                </div>
-              </div>
+            <div className="inline-block px-6 py-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full">
+              <p className="text-sm text-white/60 font-mono">
+                Designed & Built by <span className="text-cyan-400">Khalid</span> — Running on{' '}
+                <span className="text-magenta-400">caffeine</span> &{' '}
+                <span className="text-violet-400">Arch Linux</span>
+              </p>
             </div>
 
-            {/* Social Links */}
-            <div className="glass-intense p-8 rounded-2xl">
-              <h3 className="text-xl font-space font-semibold text-white mb-6">
-                Find Me Online
-              </h3>
-              
-              <div className="space-y-4">
-                {socialLinks.map((link, index) => (
-                  <motion.a
-                    key={link.name}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    whileHover={{ scale: 1.02, x: 10 }}
-                    className="flex items-center gap-4 p-4 rounded-lg bg-void-darker hover:bg-void-lighter transition-all duration-300 group"
-                  >
-                    <div className="text-2xl group-hover:scale-110 transition-transform duration-300">
-                      {link.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-space font-medium text-white group-hover:holo-text transition-all duration-300">
-                        {link.name}
-                      </h4>
-                      <p className="text-gray-400 text-sm">{link.description}</p>
-                    </div>
-                    <div className="text-gray-400 group-hover:text-holo-cyan transition-colors duration-300">
-                      →
-                    </div>
-                  </motion.a>
-                ))}
-              </div>
-            </div>
-
-            {/* Terminal-style contact info */}
-            <div className="glass-intense p-6 rounded-2xl terminal-font">
-              <div className="text-mint-green mb-2">
-                <span className="text-glacier-blue">$ </span>
-                <span className="text-white">curl -X GET /contact/khalid</span>
-              </div>
-              <div className="text-gray-300 text-sm space-y-1">
-                <div>Status: Available for hire</div>
-                <div>Specialties: ["Data Engineering", "AI/ML", "Creative Tech"]</div>
-                <div>Timezone: Europe/Paris (UTC+1)</div>
-                <div>Preferred communication: Email, LinkedIn</div>
-                <div>Coffee status: Always brewing ☕</div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-center mt-16 pt-16 border-t border-gray-800"
-        >
-          <p className="text-gray-400 font-inter">
-            Designed & Built by Khalid — Running on caffeine & Arch Linux
-          </p>
-          <div className="flex items-center justify-center gap-2 mt-4 text-sm text-gray-500">
-            <span>Made with</span>
-            <span className="text-red-400">❤️</span>
-            <span>using Next.js, Three.js & lots of jazz music</span>
-          </div>
+            {/* Copyright */}
+            <p className="mt-6 text-xs text-white/40">
+              © {new Date().getFullYear()} Khalid. All rights reserved.
+            </p>
+          </motion.footer>
         </motion.div>
       </div>
     </section>

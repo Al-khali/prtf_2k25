@@ -2,79 +2,30 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import ProjectCard from '@/components/ProjectCard'
+import { ProjectCard } from '@/components/ProjectCard'
 
-const projects = [
-  {
-    id: 'data-pipeline',
-    title: 'Real-time ETL Pipeline',
-    category: 'Data/AI',
-    description: 'Streaming data pipeline processing 10M+ events/day with Apache Kafka and Spark',
-    tech: ['Python', 'Apache Spark', 'Kafka', 'PostgreSQL', 'Docker'],
-    demo: 'data-viz',
-    github: 'https://github.com/khalid/data-pipeline',
-    featured: true
-  },
-  {
-    id: 'neon-runner',
-    title: 'Neon Runner',
-    category: 'Indie Games',
-    description: 'Cyberpunk endless runner built with Phaser.js and WebGL shaders',
-    tech: ['JavaScript', 'Phaser.js', 'WebGL', 'GLSL'],
-    demo: 'game',
-    github: 'https://github.com/khalid/neon-runner',
-    featured: true
-  },
-  {
-    id: 'ml-viz',
-    title: 'ML Model Explainer',
-    category: 'Data/AI',
-    description: 'Interactive visualizations for explaining machine learning model decisions',
-    tech: ['React', 'D3.js', 'Python', 'scikit-learn', 'Flask'],
-    demo: 'interactive',
-    github: 'https://github.com/khalid/ml-viz',
-    featured: false
-  },
-  {
-    id: 'synthwave-player',
-    title: 'Synthwave Music Player',
-    category: 'Music',
-    description: 'Retro music player with audio visualization and 80s aesthetics',
-    tech: ['React', 'Web Audio API', 'Canvas', 'TypeScript'],
-    demo: 'music',
-    github: 'https://github.com/khalid/synthwave-player',
-    featured: false
-  },
-  {
-    id: 'arch-rice',
-    title: 'Arch Linux Rice',
-    category: 'Design',
-    description: 'Minimalist Arch Linux desktop configuration with custom polybar and rofi',
-    tech: ['i3wm', 'Polybar', 'Rofi', 'Zsh', 'Neovim'],
-    demo: 'showcase',
-    github: 'https://github.com/khalid/arch-dotfiles',
-    featured: false
-  },
-  {
-    id: 'ctf-writeups',
-    title: 'CTF Writeups',
-    category: 'Security',
-    description: 'Collection of CTF challenges and writeups from various competitions',
-    tech: ['Python', 'Binary Analysis', 'Cryptography', 'Web Security'],
-    demo: 'docs',
-    github: 'https://github.com/khalid/ctf-writeups',
-    featured: false
-  }
-]
+// Import projects from centralized data
+import { projects } from '@/lib/projects-data';
+import type { Project } from '@/types';
 
-const categories = ['All', 'Data/AI', 'Indie Games', 'Music', 'Design', 'Security']
+const categories = ['All', 'Data & AI', 'Games', 'Music', 'Design', 'Security'];
+
+// Map category names to match Project type
+const categoryMap: Record<string, Project['category']> = {
+  'All': 'data-ai', // This won't be used for filtering
+  'Data & AI': 'data-ai',
+  'Games': 'games',
+  'Music': 'music',
+  'Design': 'design',
+  'Security': 'security',
+};
 
 export default function Projects() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [showFeatured, setShowFeatured] = useState(false)
 
   const filteredProjects = projects.filter(project => {
-    const categoryMatch = selectedCategory === 'All' || project.category === selectedCategory
+    const categoryMatch = selectedCategory === 'All' || project.category === categoryMap[selectedCategory]
     const featuredMatch = !showFeatured || project.featured
     return categoryMatch && featuredMatch
   })
@@ -127,7 +78,7 @@ export default function Projects() {
             <ProjectCard
               key={project.id}
               project={project}
-              index={index}
+              delay={index * 0.1}
             />
           ))}
         </motion.div>

@@ -4,15 +4,15 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
-import ProjectsSection from '@/components/ProjectsSection';
-import AITerminal from '@/components/AITerminal';
+import { ProjectsSection } from '@/components/ProjectsSection';
+import { AITerminal } from '@/components/AITerminal';
 import MusicSection from '@/components/MusicSection';
 import ContactSection from '@/components/ContactSection';
+import Navigation from '@/components/Navigation';
 import { konamiDetector, easterEggs } from '@/utils/konamiCode';
 
 export default function Home() {
   const [showKonamiMessage, setShowKonamiMessage] = useState(false);
-  const [currentSection, setCurrentSection] = useState(0);
   const [theme, setTheme] = useState<'normal' | 'riced'>('normal');
 
   useEffect(() => {
@@ -25,28 +25,15 @@ export default function Home() {
         setTimeout(() => setShowKonamiMessage(false), 3000);
       });
     }
-
-    // Smooth scroll behavior for navigation
-    const handleScroll = () => {
-      const sections = document.querySelectorAll('section');
-      const scrollPosition = window.scrollY + window.innerHeight / 2;
-
-      sections.forEach((section, index) => {
-        const sectionTop = section.offsetTop;
-        const sectionBottom = sectionTop + section.offsetHeight;
-
-        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-          setCurrentSection(index);
-        }
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, [theme]);
 
   return (
-    <main className={`relative ${theme === 'riced' ? 'riced-theme' : ''}`}>
+    <main 
+      id="main-content" 
+      className={`relative ${theme === 'riced' ? 'riced-theme' : ''}`}
+      role="main"
+      aria-label="Main content"
+    >
       {/* Riced mode header */}
       {theme === 'riced' && (
         <motion.div
@@ -94,33 +81,29 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Navigation dots */}
-      <div className="fixed right-8 top-1/2 transform -translate-y-1/2 z-40 space-y-4">
-        {[0, 1, 2, 3, 4, 5].map((index) => (
-          <motion.div
-            key={index}
-            whileHover={{ scale: 1.2 }}
-            className={`w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${
-              currentSection === index
-                ? 'bg-holo-cyan glow-cyan'
-                : 'bg-gray-600 hover:bg-gray-400'
-            }`}
-            onClick={() => {
-              const sections = document.querySelectorAll('section');
-              sections[index]?.scrollIntoView({ behavior: 'smooth' });
-            }}
-          />
-        ))}
-      </div>
+      {/* Navigation */}
+      <Navigation variant="dots" />
 
       {/* Sections */}
       <div className={theme === 'riced' ? 'pt-12' : ''}>
-        <HeroSection />
-        <AboutSection />
-        <ProjectsSection />
-        <AITerminal />
-        <MusicSection />
-        <ContactSection />
+        <div id="hero">
+          <HeroSection />
+        </div>
+        <div id="about">
+          <AboutSection />
+        </div>
+        <div id="projects">
+          <ProjectsSection />
+        </div>
+        <div id="terminal">
+          <AITerminal />
+        </div>
+        <div id="music">
+          <MusicSection />
+        </div>
+        <div id="contact">
+          <ContactSection />
+        </div>
       </div>
 
       {/* Floating easter egg hints - much more subtle */}

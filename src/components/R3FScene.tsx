@@ -1,140 +1,126 @@
-'use client'
+'use client';
 
-import { useRef, useMemo } from 'react'
-import { useFrame } from '@react-three/fiber'
-import { Points, PointMaterial } from '@react-three/drei'
-import * as THREE from 'three'
+import { Canvas } from '@react-three/fiber';
+import { PerspectiveCamera } from '@react-three/drei';
+import { Suspense, useEffect, useState } from 'react';
+import { useDeviceCapabilities } from '@/hooks/useDeviceCapabilities';
 
-function Particles() {
-  const ref = useRef<THREE.Points>(null!)
-  
-  const particlesPosition = useMemo(() => {
-    const positions = new Float32Array(2000 * 3)
-    
-    for (let i = 0; i < 2000; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 20
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 20
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 20
-    }
-    
-    return positions
-  }, [])
-
-  useFrame((state) => {
-    if (ref.current) {
-      ref.current.rotation.x = state.clock.elapsedTime * 0.1
-      ref.current.rotation.y = state.clock.elapsedTime * 0.05
-    }
-  })
-
-  return (
-    <Points ref={ref} positions={particlesPosition} stride={3} frustumCulled={false}>
-      <PointMaterial
-        transparent
-        color="#00ffff"
-        size={0.05}
-        sizeAttenuation={true}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </Points>
-  )
+interface R3FSceneProps {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
 }
 
-function FloatingCubes() {
-  const meshRef = useRef<THREE.Mesh>(null!)
-  
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.x = state.clock.elapsedTime * 0.2
-      meshRef.current.rotation.y = state.clock.elapsedTime * 0.3
-      meshRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.5
+/**
+ * React Three Fiber Scene wrapper with performance monitoring and fallback
+ * Provides camera setup, lighting, and responsive canvas sizing
+ * Automatically falls back to static gradient on unsupported or low-end devices
+ */
+export default function R3FScene({ children, fallback }: R3FSceneProps) {
+  const { isMobile, isLowEnd, supportsWebGL, prefersReducedMotion } = useDeviceCapabilities();
+  const [shouldRender3D, setShouldRender3D] = useState(true);
+
+  useEffect(() => {
+    // Disable 3D on low-end devices or if WebGL not supported
+    if (!supportsWebGL || isLowEnd) {
+      setShouldRender3D(false);
+      console.info('3D rendering disabled: using static fallback for better performance');
     }
-  })
+  }, [supportsWebGL, isLowEnd]);
+
+  // Fallback for unsupported or low-end devices
+  if (!shouldRender3D) {
+    return (
+      <div className="absolute inset-0 -z-10">
+        {fallback || (
+          <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
+            <div className="absolute inset-0 opacity-20">
+              <div 
+                className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-holo-cyan blur-3xl"
+                style={{
+                  animation: prefersReducedMotion ? 'none' : 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                }}
+              />
+              <div 
+                className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-holo-magenta blur-3xl"
+                style={{
+                  animation: prefersReducedMotion ? 'none' : 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                  animationDelay: '1s'
+                }}
+              />
+              <div 
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-holo-violet blur-3xl opacity-10"
+                style={{
+                  animation: prefersReducedMotion ? 'none' : 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                  animationDelay: '2s'
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
-    <mesh ref={meshRef} position={[3, 0, 0]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial
-        color="#ff00ff"
-        transparent
-        opacity={0.6}
-        emissive="#ff00ff"
-        emissiveIntensity={0.3}
-      />
-    </mesh>
-  )
-}
+    <div className="absolute inset-0 -z-10">
+      <Canvas
+        dpr={[1, isMobile ? 1.5 : 2]} // Adaptive pixel ratio based on device
+        performance={{ 
+          min: 0.5, // Will reduce quality if FPS drops below 50%
+          max: 1, // Maximum quality multiplier
+          debounce: 200, // Debounce performance adjustments
+        }}
+        gl={{
+          antialias: !isMobile, // Disable antialiasing on mobile for performance
+          alpha: true,
+          powerPreference: 'high-performance',
+          stencil: false, // Disable stencil buffer for performance
+          depth: true,
+          logarithmicDepthBuffer: false, // Disable for better performance
+          preserveDrawingBuffer: false, // Don't preserve buffer for better performance
+        }}
+        frameloop="always" // Continuous rendering for animations
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+        }}
+        onCreated={({ gl }) => {
+          // Additional WebGL optimizations
+          gl.setClearColor('#0c0d10', 1);
+          
+          // Log renderer info in development
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[R3FScene] WebGL Renderer:', {
+              vendor: gl.getParameter(gl.VENDOR),
+              renderer: gl.getParameter(gl.RENDERER),
+              maxTextures: gl.capabilities.maxTextures,
+              maxVertexUniforms: gl.capabilities.maxVertexUniforms,
+            });
+          }
+        }}
+      >
+        {/* Camera setup */}
+        <PerspectiveCamera
+          makeDefault
+          position={[0, 0, 5]}
+          fov={isMobile ? 85 : 75} // Wider FOV on mobile for better view
+          near={0.1}
+          far={1000}
+        />
 
-function GridPlane() {
-  const gridRef = useRef<THREE.Mesh>(null!)
-  
-  useFrame((state) => {
-    if (gridRef.current) {
-      gridRef.current.position.z = ((state.clock.elapsedTime * 2) % 20) - 10
-    }
-  })
+        {/* Lighting setup - optimized for particle rendering */}
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} intensity={1} />
+        <pointLight position={[-10, -10, -10]} intensity={0.5} color="#00f5ff" />
 
-  return (
-    <mesh ref={gridRef} position={[0, -5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[50, 50, 50, 50]} />
-      <meshBasicMaterial
-        color="#00ff00"
-        wireframe
-        transparent
-        opacity={0.2}
-      />
-    </mesh>
-  )
-}
-
-function NeonRings() {
-  const ringRefs = useRef<THREE.Mesh[]>([])
-  
-  useFrame((state) => {
-    ringRefs.current.forEach((ring, i) => {
-      if (ring) {
-        ring.rotation.x = state.clock.elapsedTime * (0.5 + i * 0.1)
-        ring.rotation.y = state.clock.elapsedTime * (0.3 + i * 0.05)
-      }
-    })
-  })
-
-  return (
-    <>
-      {[...Array(3)].map((_, i) => (
-        <mesh
-          key={i}
-          ref={(el) => el && (ringRefs.current[i] = el)}
-          position={[-3, i * 2 - 2, 0]}
-        >
-          <torusGeometry args={[1 + i * 0.5, 0.1, 8, 32]} />
-          <meshStandardMaterial
-            color={i === 0 ? "#00ffff" : i === 1 ? "#ff00ff" : "#ffff00"}
-            emissive={i === 0 ? "#00ffff" : i === 1 ? "#ff00ff" : "#ffff00"}
-            emissiveIntensity={0.5}
-            transparent
-            opacity={0.8}
-          />
-        </mesh>
-      ))}
-    </>
-  )
-}
-
-export default function R3FScene() {
-  return (
-    <>
-      <ambientLight intensity={0.1} />
-      <pointLight position={[10, 10, 10]} intensity={1} color="#00ffff" />
-      <pointLight position={[-10, -10, -10]} intensity={1} color="#ff00ff" />
-      
-      <Particles />
-      <FloatingCubes />
-      <GridPlane />
-      <NeonRings />
-      
-      <fog attach="fog" args={['#000000', 5, 50]} />
-    </>
-  )
+        {/* Scene content with Suspense boundary */}
+        <Suspense fallback={null}>
+          {children}
+        </Suspense>
+      </Canvas>
+    </div>
+  );
 }

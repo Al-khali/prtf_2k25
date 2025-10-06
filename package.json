@@ -5,11 +5,14 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
+    "build:analyze": "ANALYZE=true next build",
     "export": "next build && next export",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "lighthouse": "npm run build && npm run start & sleep 5 && npx lighthouse http://localhost:3000 --view && kill %1",
+    "audit": "npm audit --production"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -26,7 +29,9 @@
     "react-use": "^17.6.0",
     "recharts": "^3.2.1",
     "swr": "^2.3.6",
+    "tailwind-merge": "^3.3.1",
     "three": "^0.180.0",
+    "zod": "^4.1.12",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
