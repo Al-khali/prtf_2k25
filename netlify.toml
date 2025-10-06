@@ -1,0 +1,38 @@
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[context.production.environment]
+  NEXT_PUBLIC_OPENAI_KEY = ""
+
+[context.deploy-preview.environment]
+  NEXT_PUBLIC_OPENAI_KEY = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin/0x1337"
+  status = 301
+
+[[redirects]]
+  from = "/terminal"
+  to = "/"
+  status = 301
+
+# SPA fallback for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,19 @@
+🚩 FLAG{w3lc0m3_t0_th3_m4tr1x}
+
+Congratulations! You found one of the hidden flags.
+
+This easter egg demonstrates:
+- File discovery techniques
+- Hidden content exploration
+- CTF-style treasure hunting
+
+Keep exploring for more hidden gems throughout the portfolio!
+
+Next challenge: Can you trigger all the easter eggs in sequence?
+1. Konami Code
+2. URL unlock parameter  
+3. Terminal secret access
+4. Hidden admin panel
+5. Music concert mode
+
+Happy hunting! 🕵️‍♂️

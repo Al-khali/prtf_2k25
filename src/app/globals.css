@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Core palette */
+  --deep-void: #0c0d10;
+  --void-darker: #080a0d;
+  --void-lighter: #12141a;
+  
+  /* Holographic gradients */
+  --holo-cyan: #00ffff;
+  --holo-magenta: #ff00ff;
+  --holo-violet: #8a2be2;
+  --holo-gold: #ffd700;
+  
+  /* Terminal accents */
+  --mint-green: #50fa7b;
+  --glacier-blue: #8be9fd;
+  --electric-purple: #bd93f9;
+  
+  /* Glass & glow effects */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glow-cyan: rgba(0, 255, 255, 0.3);
+  --glow-magenta: rgba(255, 0, 255, 0.3);
+  
+  /* Legacy vars for compatibility */
+  --background: var(--deep-void);
+  --foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--deep-void);
+  --color-foreground: #ffffff;
+  --font-sans: 'Inter', var(--font-geist-sans);
+  --font-mono: 'IBM Plex Mono', var(--font-geist-mono);
+  --font-space: 'Space Grotesk', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--deep-void);
+  color: #ffffff;
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--void-darker);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, var(--holo-cyan), var(--holo-magenta));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, var(--holo-magenta), var(--holo-violet));
+}
+
+/* Holographic text effect */
+.holo-text {
+  background: linear-gradient(45deg, var(--holo-cyan), var(--holo-magenta), var(--holo-violet), var(--holo-gold));
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: holo-shift 8s ease-in-out infinite;
+}
+
+@keyframes holo-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Glassmorphism utilities */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-intense {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+}
+
+/* Glow effects */
+.glow-cyan {
+  box-shadow: 0 0 20px var(--glow-cyan);
+}
+
+.glow-magenta {
+  box-shadow: 0 0 20px var(--glow-magenta);
+}
+
+.glow-hover {
+  transition: all 0.3s ease;
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.4), 0 0 60px rgba(255, 0, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Terminal styling */
+.terminal-font {
+  font-family: 'IBM Plex Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
+}
+
+.terminal-cursor::after {
+  content: '▋';
+  animation: blink 1s infinite;
+  color: var(--mint-green);
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Particle system base */
+.particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Floating animations */
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.float-delayed {
+  animation: float 6s ease-in-out infinite 2s;
+}
+
+/* Holographic borders */
+.holo-border {
+  position: relative;
+  border: 1px solid transparent;
+  background: linear-gradient(var(--deep-void), var(--deep-void)) padding-box,
+              linear-gradient(45deg, var(--holo-cyan), var(--holo-magenta), var(--holo-violet)) border-box;
+}
+
+/* Selection styling */
+::selection {
+  background: var(--holo-cyan);
+  color: var(--deep-void);
+}
+
+::-moz-selection {
+  background: var(--holo-cyan);
+  color: var(--deep-void);
+}
