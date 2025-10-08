@@ -1,211 +1,181 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { Project } from '@/types';
-import { Badge } from '@/components/ui/Badge';
-import { twMerge } from 'tailwind-merge';
-import { getCategoryBlurPlaceholder, responsiveImageSizes, imageQuality } from '@/lib/image-utils';
+import { ExternalLink, Github, Lock, FileText, Mail } from 'lucide-react';
 
-export interface ProjectCardProps {
+interface ProjectCardProps {
   project: Project;
-  /** Custom className */
-  className?: string;
-  /** Animation delay for stagger effect */
-  delay?: number;
+  index: number;
 }
 
 /**
- * Map technology tags to badge categories
+ * Modern ProjectCard component with NDA support
+ * Features glass morphism, smooth animations, and professional badges
  */
-const getTechCategory = (tag: string): 'data' | 'ai' | 'ml' | 'frontend' | 'backend' | 'devops' | 'design' | 'security' | 'default' => {
-  const tagLower = tag.toLowerCase();
-  
-  // Data Engineering
-  if (['bigquery', 'dbt', 'airflow', 'spark', 'sql', 'data engineering', 'etl'].some(t => tagLower.includes(t))) {
-    return 'data';
-  }
-  
-  // AI/ML
-  if (['pytorch', 'tensorflow', 'ml', 'machine learning', 'transformers', 'bert'].some(t => tagLower.includes(t))) {
-    return 'ml';
-  }
-  
-  if (['ai', 'nlp', 'data science', 'scikit-learn', 'xgboost'].some(t => tagLower.includes(t))) {
-    return 'ai';
-  }
-  
-  // Frontend
-  if (['react', 'next.js', 'typescript', 'javascript', 'tailwind', 'framer'].some(t => tagLower.includes(t))) {
-    return 'frontend';
-  }
-  
-  // Backend
-  if (['python', 'node', 'api', 'database', 'backend'].some(t => tagLower.includes(t))) {
-    return 'backend';
-  }
-  
-  // DevOps
-  if (['docker', 'kubernetes', 'aws', 'gcp', 'devops', 'ci/cd'].some(t => tagLower.includes(t))) {
-    return 'devops';
-  }
-  
-  // Design
-  if (['figma', 'design', 'ui/ux', 'branding', 'animation'].some(t => tagLower.includes(t))) {
-    return 'design';
-  }
-  
-  // Security
-  if (['security', 'ctf', 'cryptography', 'pentesting'].some(t => tagLower.includes(t))) {
-    return 'security';
-  }
-  
-  return 'default';
-};
+export default function ProjectCard({ project, index }: ProjectCardProps) {
+  const {
+    title,
+    description,
+    tags,
+    image,
+    github,
+    link,
+    caseStudy,
+    metrics,
+    confidential,
+    status,
+  } = project;
 
-/**
- * ProjectCard - Glass card component for displaying project information
- * 
- * Features:
- * - Image with overlay gradient
- * - Hover animation with expand effect and luminous glow
- * - Technology badges at bottom
- * - Click handler for navigation
- * - Metrics display for data projects
- */
-export const ProjectCard: React.FC<ProjectCardProps> = ({ project, className, delay = 0 }) => {
-  const router = useRouter();
-
-  const handleClick = () => {
-    if (project.link) {
-      router.push(project.link);
-    }
+  // Gradient colors based on category
+  const gradients = {
+    'data-ai': 'from-cyan-500 to-blue-500',
+    'games': 'from-purple-500 to-pink-500',
+    'music': 'from-amber-500 to-orange-500',
+    'design': 'from-green-500 to-teal-500',
+    'security': 'from-red-500 to-rose-500',
   };
 
+  const gradient = gradients[project.category] || 'from-cyan-500 to-blue-500';
+
   return (
-    <motion.div
-      className={twMerge(
-        'group relative rounded-xl overflow-hidden cursor-pointer',
-        'bg-white/5 backdrop-blur-md',
-        'border border-white/10',
-        'transition-all duration-500 ease-out',
-        'hover:bg-white/10 hover:border-white/20',
-        'hover:shadow-[0_0_40px_rgba(0,255,255,0.3),0_0_80px_rgba(255,0,255,0.2)]',
-        'hover:scale-[1.02]',
-        className
-      )}
+    <motion.article
       initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay, ease: 'easeOut' }}
-      onClick={handleClick}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
       whileHover={{ y: -8 }}
+      className="group relative h-full"
     >
-      {/* Image Container */}
-      <div className="relative w-full h-48 overflow-hidden bg-gradient-to-br from-[#0c0d10] to-[#1a1b1e]">
-        {/* Optimized Image with blur placeholder */}
-        {project.image ? (
-          <Image
-            src={project.image}
-            alt={project.title}
-            fill
-            sizes={responsiveImageSizes.card}
-            quality={imageQuality.card}
-            placeholder="blur"
-            blurDataURL={getCategoryBlurPlaceholder(project.category)}
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-        ) : (
-          /* Placeholder gradient if no image */
-          <div className="absolute inset-0 bg-gradient-to-br from-[#00f5ff]/20 via-[#ff00ff]/20 to-[#8b00ff]/20" />
-        )}
+      <div className="relative h-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-lg hover:shadow-cyan-500/10">
         
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d10] via-[#0c0d10]/50 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500 z-[1]" />
-        
-        {/* Featured badge */}
-        {project.featured && (
-          <div className="absolute top-3 right-3 z-10">
-            <Badge category="ai" size="sm" className="backdrop-blur-md">
-              ⭐ Featured
-            </Badge>
+        {/* Image with overlay */}
+        <div className="relative h-48 overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
+          {image && (
+            <img
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          )}
+          
+          {/* Gradient overlay */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-20 mix-blend-overlay`} />
+          
+          {/* Badges overlay */}
+          <div className="absolute top-3 right-3 flex gap-2">
+            {confidential && (
+              <span className="flex items-center gap-1 px-2 py-1 bg-red-500/90 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                <Lock className="w-3 h-3" />
+                NDA
+              </span>
+            )}
+            {status === 'in-progress' && (
+              <span className="px-2 py-1 bg-amber-500/90 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                In Progress
+              </span>
+            )}
+            {status === 'private' && (
+              <span className="px-2 py-1 bg-purple-500/90 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                Private
+              </span>
+            )}
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Content */}
-      <div className="p-6 space-y-4">
-        {/* Title */}
-        <h3 className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[#00f5ff] group-hover:to-[#ff00ff] transition-all duration-300">
-          {project.title}
-        </h3>
+        {/* Content */}
+        <div className="p-6 flex flex-col h-[calc(100%-12rem)]">
+          {/* Title */}
+          <h3 className="text-xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-blue-500 transition-all duration-300">
+            {title}
+          </h3>
 
-        {/* Description */}
-        <p className="text-gray-300 text-sm line-clamp-3 leading-relaxed">
-          {project.description}
-        </p>
+          {/* Description */}
+          <p className="text-gray-400 text-sm mb-4 line-clamp-3 flex-grow">
+            {description}
+          </p>
 
-        {/* Metrics (for data projects) */}
-        {project.metrics && project.metrics.length > 0 && (
-          <div className="flex flex-wrap gap-3 pt-2">
-            {project.metrics.map((metric, index) => (
-              <div key={index} className="flex flex-col">
-                <span className="text-xs text-gray-400">{metric.label}</span>
-                <span className="text-sm font-semibold text-[#00ff9f]">{metric.value}</span>
-              </div>
+          {/* Metrics */}
+          {metrics && metrics.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 mb-4 pb-4 border-b border-white/10">
+              {metrics.slice(0, 3).map((metric, idx) => (
+                <div key={idx} className="text-center">
+                  <div className={`text-sm font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
+                    {metric.value}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {metric.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {tags.slice(0, 4).map((tag, idx) => (
+              <span
+                key={idx}
+                className="px-2 py-1 bg-white/5 border border-white/10 rounded-md text-xs text-gray-300 hover:bg-white/10 hover:border-white/20 transition-all duration-200"
+              >
+                {tag}
+              </span>
             ))}
+            {tags.length > 4 && (
+              <span className="px-2 py-1 text-xs text-gray-500">
+                +{tags.length - 4} more
+              </span>
+            )}
           </div>
-        )}
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2 pt-2">
-          {project.tags.slice(0, 4).map((tag, index) => (
-            <Badge
-              key={index}
-              category={getTechCategory(tag)}
-              size="sm"
-              hoverGlow={false}
-            >
-              {tag}
-            </Badge>
-          ))}
-          {project.tags.length > 4 && (
-            <Badge category="default" size="sm" hoverGlow={false}>
-              +{project.tags.length - 4}
-            </Badge>
-          )}
-        </div>
-
-        {/* Links */}
-        <div className="flex items-center gap-3 pt-2">
-          {project.github && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-xs text-gray-400 hover:text-[#00f5ff] transition-colors duration-300 flex items-center gap-1"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-              GitHub
-            </a>
-          )}
-          <span className="text-xs text-gray-500 flex items-center gap-1">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-            View Details
-          </span>
+          {/* Actions */}
+          <div className="flex gap-2 mt-auto">
+            {github && !confidential && (
+              <a
+                href={github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-300 hover:bg-white/10 hover:border-white/20 hover:text-white transition-all duration-200 flex-1 justify-center"
+              >
+                <Github className="w-4 h-4" />
+                Code
+              </a>
+            )}
+            
+            {confidential && caseStudy && (
+              <a
+                href={caseStudy}
+                className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-300 hover:bg-white/10 hover:border-white/20 hover:text-white transition-all duration-200 flex-1 justify-center"
+              >
+                <FileText className="w-4 h-4" />
+                Case Study
+              </a>
+            )}
+            
+            {confidential && !caseStudy && !github && (
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-300 hover:bg-white/10 hover:border-white/20 hover:text-white transition-all duration-200 flex-1 justify-center"
+                onClick={() => window.location.href = '#contact'}
+              >
+                <Mail className="w-4 h-4" />
+                Contact
+              </button>
+            )}
+            
+            {link && (
+              <a
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${gradient} rounded-lg text-sm text-white font-medium hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-200 ${github || (confidential && caseStudy) ? 'flex-1' : 'w-full'} justify-center`}
+              >
+                <ExternalLink className="w-4 h-4" />
+                View Project
+              </a>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Hover glow effect overlay */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#00f5ff]/5 via-transparent to-[#ff00ff]/5" />
-      </div>
-    </motion.div>
+    </motion.article>
   );
-};
+}

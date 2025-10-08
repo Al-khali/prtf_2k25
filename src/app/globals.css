@@ -307,32 +307,86 @@ body {
 }
 
 /* Accessibility - Focus Indicators */
+/* Remove default focus outline for mouse users */
 *:focus {
   outline: none;
 }
 
+/* Visible focus indicators for keyboard navigation */
 *:focus-visible {
   outline: 2px solid var(--holo-cyan);
   outline-offset: 4px;
   border-radius: 4px;
+  transition: outline-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Enhanced focus for interactive elements */
 button:focus-visible,
 a:focus-visible,
+[role="button"]:focus-visible,
+[role="link"]:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
-select:focus-visible {
+select:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
   outline: 2px solid var(--holo-cyan);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(0, 245, 255, 0.2);
 }
 
-/* High contrast focus for interactive elements */
+/* High contrast focus for glass elements */
 .glass:focus-visible,
-.glass-intense:focus-visible {
+.glass-intense:focus-visible,
+.holo-border:focus-visible {
   outline: 3px solid var(--holo-cyan);
   outline-offset: 2px;
   box-shadow: 0 0 0 6px rgba(0, 245, 255, 0.3), 0 0 20px var(--glow-cyan);
+}
+
+/* Focus for cards and interactive containers */
+[role="article"]:focus-visible,
+[role="region"]:focus-visible,
+.project-card:focus-visible {
+  outline: 2px solid var(--holo-cyan);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 4px rgba(0, 245, 255, 0.15);
+}
+
+/* Focus for navigation elements */
+nav a:focus-visible,
+nav button:focus-visible {
+  outline: 2px solid var(--terminal-green);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 255, 159, 0.2);
+}
+
+/* Minimum touch target sizes for accessibility */
+button,
+a,
+[role="button"],
+[role="link"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  min-width: 48px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Larger touch targets on mobile */
+@media (max-width: 768px) {
+  button,
+  a,
+  [role="button"],
+  [role="link"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    min-width: 56px;
+    min-height: 56px;
+  }
 }
 
 /* Screen reader only utility */
@@ -411,6 +465,8 @@ select:focus-visible {
   :root {
     --glass-bg: rgba(255, 255, 255, 0.15);
     --glass-border: rgba(255, 255, 255, 0.3);
+    --holo-cyan: #00ffff;
+    --terminal-green: #00ff00;
   }
   
   .glass,
@@ -418,7 +474,27 @@ select:focus-visible {
     border-width: 2px;
   }
   
+  /* Enhanced focus indicators for high contrast */
   *:focus-visible {
     outline-width: 3px;
+    outline-color: var(--terminal-green);
+  }
+  
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline-width: 3px;
+    outline-color: var(--terminal-green);
+    box-shadow: 0 0 0 6px rgba(0, 255, 0, 0.3);
+  }
+  
+  .glass:focus-visible,
+  .glass-intense:focus-visible {
+    outline-width: 4px;
+    outline-color: var(--terminal-green);
+    box-shadow: 0 0 0 8px rgba(0, 255, 0, 0.4);
   }
 }

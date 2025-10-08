@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { TerminalHistory, TerminalOutput } from '@/types';
 import { useTerminalHistory } from '@/hooks/useTerminalHistory';
 import { useCommandAutocomplete } from '@/hooks/useCommandAutocomplete';
+import { Terminal } from 'lucide-react';
 
 export interface AITerminalProps {
   onCommand?: (command: string) => TerminalOutput;
@@ -15,15 +16,16 @@ export interface AITerminalProps {
 }
 
 /**
- * AITerminal - Interactive terminal component with command input and output display
+ * Modern Bash Terminal - Interactive terminal with modern design
  * 
  * Features:
+ * - Modern glass morphism design
  * - Command input with blinking cursor
  * - Scrollable output display
  * - Command history navigation (up/down arrows)
  * - Auto-complete suggestions
- * - Auto-focus on mount
- * - Terminal-style aesthetics
+ * - Easter eggs (fastfetch, fzf, eva, etc.)
+ * - Terminal-style aesthetics with modern touch
  */
 export const AITerminal: React.FC<AITerminalProps> = ({
   onCommand,
@@ -156,13 +158,13 @@ export const AITerminal: React.FC<AITerminalProps> = ({
   const getOutputColor = (type: TerminalOutput['type']) => {
     switch (type) {
       case 'success':
-        return 'text-[#00ff9f]';
+        return 'text-green-400';
       case 'error':
-        return 'text-[#ff0055]';
+        return 'text-red-400';
       case 'component':
         return 'text-white';
       default:
-        return 'text-[#00d4ff]';
+        return 'text-gray-300';
     }
   };
 
@@ -170,28 +172,47 @@ export const AITerminal: React.FC<AITerminalProps> = ({
     <div
       ref={terminalRef}
       onClick={handleTerminalClick}
-      className={`relative w-full h-full min-h-[400px] bg-[#0a0b0d] rounded-xl border border-[#00ff9f]/20 overflow-hidden font-mono ${className}`}
+      className={`relative w-full h-full min-h-[500px] bg-gradient-to-br from-gray-900 to-black rounded-xl border border-cyan-500/20 overflow-hidden font-mono shadow-2xl ${className}`}
     >
-      {/* Terminal Header */}
-      <div className="flex items-center gap-2 px-4 py-3 bg-[#0c0d10] border-b border-[#00ff9f]/20">
-        <div className="flex gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#ff0055]" />
-          <div className="w-3 h-3 rounded-full bg-[#ffd700]" />
-          <div className="w-3 h-3 rounded-full bg-[#00ff9f]" />
+      {/* Modern Terminal Header */}
+      <div className="flex items-center justify-between px-4 py-3 bg-white/5 backdrop-blur-sm border-b border-white/10">
+        <div className="flex items-center gap-3">
+          <div className="flex gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-400 transition-colors cursor-pointer" />
+            <div className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-400 transition-colors cursor-pointer" />
+            <div className="w-3 h-3 rounded-full bg-green-500 hover:bg-green-400 transition-colors cursor-pointer" />
+          </div>
+          <div className="flex items-center gap-2 ml-2">
+            <Terminal className="w-4 h-4 text-cyan-400" />
+            <span className="text-sm text-gray-400 font-medium">bash</span>
+          </div>
         </div>
-        <span className="ml-4 text-sm text-[#00ff9f]/70">khalid@portfolio:~$</span>
+        <div className="flex items-center gap-2 text-xs text-gray-500">
+          <span>khalid@portfolio</span>
+          <span className="text-cyan-400">~</span>
+        </div>
       </div>
 
       {/* Terminal Output */}
       <div
         ref={outputRef}
-        className="h-[calc(100%-8rem)] overflow-y-auto px-4 py-4 space-y-3 scrollbar-thin scrollbar-thumb-[#00ff9f]/20 scrollbar-track-transparent"
+        className="h-[calc(100%-9rem)] overflow-y-auto px-4 py-4 space-y-3 scrollbar-thin scrollbar-thumb-cyan-500/20 scrollbar-track-transparent"
+        role="log"
+        aria-live="polite"
+        aria-label="Terminal output"
       >
         {outputHistory.length === 0 && (
-          <div className="text-white/50 text-sm">
-            <p>Welcome to Khalid's Interactive Terminal</p>
-            <p className="mt-2">Type <span className="text-[#00ff9f]">help</span> to see available commands.</p>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-gray-400 text-sm space-y-2"
+          >
+            <p className="text-cyan-400 font-semibold">Welcome to Khalid's Interactive Terminal</p>
+            <p>Type <span className="text-green-400 font-semibold">help</span> to see available commands.</p>
+            <p className="text-xs text-gray-500 mt-4">
+              💡 Try: <span className="text-cyan-400">neofetch</span>, <span className="text-cyan-400">fastfetch</span>, <span className="text-cyan-400">ls</span>, <span className="text-cyan-400">whoami</span>
+            </p>
+          </motion.div>
         )}
         
         <AnimatePresence mode="popLayout">
@@ -202,18 +223,18 @@ export const AITerminal: React.FC<AITerminalProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="space-y-1"
+              className="space-y-2"
             >
               {/* Command */}
               <div className="flex items-center gap-2">
-                <span className="text-[#00ff9f]">$</span>
+                <span className="text-cyan-400 font-semibold">❯</span>
                 <span className="text-white">{entry.command}</span>
               </div>
               
               {/* Output */}
               <div className={`pl-4 ${getOutputColor(entry.output.type)}`}>
                 {typeof entry.output.content === 'string' ? (
-                  <pre className="whitespace-pre-wrap font-mono text-sm">
+                  <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed">
                     {entry.output.content}
                   </pre>
                 ) : (
@@ -226,41 +247,51 @@ export const AITerminal: React.FC<AITerminalProps> = ({
       </div>
 
       {/* Terminal Input */}
-      <div className="absolute bottom-0 left-0 right-0 bg-[#0c0d10] border-t border-[#00ff9f]/20">
+      <div className="absolute bottom-0 left-0 right-0 bg-white/5 backdrop-blur-sm border-t border-white/10">
         {/* Autocomplete suggestions */}
         {suggestions.length > 0 && (
-          <div className="px-4 py-2 border-b border-[#00ff9f]/10 text-xs text-white/50">
-            Suggestions: {suggestions.slice(0, 5).map((cmd, i) => (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            id="terminal-suggestions" 
+            className="px-4 py-2 border-b border-white/10 text-xs text-gray-400 bg-white/5"
+            role="status"
+            aria-live="polite"
+          >
+            <span className="text-cyan-400 font-semibold">Suggestions:</span>{' '}
+            {suggestions.slice(0, 5).map((cmd, i) => (
               <span key={cmd}>
                 {i > 0 && ', '}
-                <span className={cmd === currentSuggestion ? 'text-[#00ff9f]' : ''}>
+                <span className={cmd === currentSuggestion ? 'text-green-400 font-semibold' : 'text-gray-300'}>
                   {cmd}
                 </span>
               </span>
             ))}
             {suggestions.length > 5 && ` +${suggestions.length - 5} more`}
-            <span className="ml-2 text-white/30">(Tab to complete)</span>
-          </div>
+            <span className="ml-2 text-gray-500">(Tab to complete)</span>
+          </motion.div>
         )}
         
-        <form onSubmit={handleSubmit} className="flex items-center gap-2 px-4 py-3">
-          <span className="text-[#00ff9f]">$</span>
+        <form onSubmit={handleSubmit} className="flex items-center gap-3 px-4 py-3">
+          <span className="text-cyan-400 font-semibold" aria-hidden="true">❯</span>
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-white outline-none font-mono text-sm placeholder:text-white/30"
-            placeholder="Type 'help' for available commands..."
+            className="flex-1 bg-transparent text-white outline-none font-mono text-sm placeholder:text-gray-500"
+            placeholder="Type a command..."
             autoComplete="off"
             spellCheck={false}
+            aria-label="Terminal command input"
+            aria-describedby="terminal-suggestions"
           />
           {/* Blinking cursor */}
           <motion.span
             animate={{ opacity: [1, 0] }}
             transition={{ duration: 0.8, repeat: Infinity, repeatType: 'reverse' }}
-            className="w-2 h-4 bg-[#00ff9f]"
+            className="w-2 h-4 bg-cyan-400 rounded-sm"
           />
         </form>
       </div>

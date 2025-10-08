@@ -14,6 +14,9 @@ export interface Project {
   github?: string;
   metrics?: ProjectMetric[];
   featured?: boolean;
+  confidential?: boolean; // Project under NDA
+  caseStudy?: string; // Link to case study for confidential projects
+  status?: 'completed' | 'in-progress' | 'private'; // Project status
 }
 
 export interface ProjectMetric {

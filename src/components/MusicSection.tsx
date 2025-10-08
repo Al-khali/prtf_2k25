@@ -13,6 +13,8 @@ export default function MusicSection() {
     currentTrackId,
     currentTrack,
     isPlaying,
+    isLoading,
+    loadError,
     volume,
     isMuted,
     currentTime,
@@ -26,6 +28,7 @@ export default function MusicSection() {
     setVolume,
     toggleMute,
     seek,
+    retryLoad,
   } = useMusic();
 
   return (
@@ -47,29 +50,24 @@ export default function MusicSection() {
           className="text-center mb-16"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6"
+            initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="inline-block mb-4"
+            transition={{ duration: 0.5 }}
           >
-            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 border border-white/10">
-              <svg className="w-5 h-5 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z" />
-              </svg>
-              <span className="text-sm font-medium text-white/80">Music Moodboard</span>
-            </div>
+            <span className="text-sm font-mono text-amber-400">// Music</span>
           </motion.div>
 
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-4xl md:text-5xl font-bold mb-4"
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
           >
-            <span className="bg-gradient-to-r from-cyan-400 via-violet-400 to-magenta-400 bg-clip-text text-transparent">
-              Sonic Influences
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-pink-600">
+              Sonic Vibes
             </span>
           </motion.h2>
 
@@ -77,10 +75,12 @@ export default function MusicSection() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-lg text-white/60 max-w-2xl mx-auto"
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto"
           >
-            From city pop to jazz fusion to 90s boom bap — the soundtracks that fuel creativity
+            From city pop to jazz fusion to 90s boom bap — the soundtracks that fuel creativity.
+            <br />
+            <span className="text-sm text-gray-500 mt-2 inline-block">Music continues playing as you navigate 🎵</span>
           </motion.p>
         </motion.div>
 
@@ -108,6 +108,8 @@ export default function MusicSection() {
             <MusicPlayer
               currentTrack={currentTrack}
               isPlaying={isPlaying}
+              isLoading={isLoading}
+              loadError={loadError}
               volume={volume}
               isMuted={isMuted}
               currentTime={currentTime}
@@ -118,6 +120,7 @@ export default function MusicSection() {
               onVolumeChange={setVolume}
               onMuteToggle={toggleMute}
               onSeek={seek}
+              onRetry={retryLoad}
             />
 
             {/* Playlist Selector */}
@@ -131,17 +134,22 @@ export default function MusicSection() {
           </motion.div>
         </div>
 
-        {/* Info text */}
+        {/* Info badges */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="mt-16 text-center"
+          className="mt-16 flex flex-wrap justify-center gap-3"
         >
-          <p className="text-sm text-white/40 font-mono">
-            // Music continues playing as you navigate through the portfolio
-          </p>
+          {['City Pop', 'Jazz Fusion', 'Lo-fi', 'Boom Bap', 'Synthwave'].map((genre) => (
+            <div
+              key={genre}
+              className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-gray-400 hover:bg-white/10 hover:border-amber-500/30 hover:text-amber-400 transition-all duration-200"
+            >
+              {genre}
+            </div>
+          ))}
         </motion.div>
       </div>
     </section>

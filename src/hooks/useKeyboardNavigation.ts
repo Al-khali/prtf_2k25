@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 /**
  * Hook to detect keyboard navigation and add appropriate class to body
@@ -24,14 +24,75 @@ export function useKeyboardNavigation() {
       }
     };
 
+    const handlePointerDown = () => {
+      // Touch/pointer usage indicates non-keyboard navigation
+      if (isKeyboardUser) {
+        isKeyboardUser = false;
+        document.body.classList.remove('keyboard-user');
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('pointerdown', handlePointerDown);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('pointerdown', handlePointerDown);
     };
   }, []);
+}
+
+/**
+ * Hook for keyboard shortcuts
+ * 
+ * @param shortcuts - Object mapping key combinations to callbacks
+ * @example
+ * useKeyboardShortcuts({
+ *   'Escape': () => closeModal(),
+ *   'ctrl+k': () => openSearch(),
+ * });
+ */
+export function useKeyboardShortcuts(
+  shortcuts: Record<string, () => void>,
+  enabled: boolean = true
+) {
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!enabled) return;
+
+      // Build key combination string
+      const keys: string[] = [];
+      if (event.ctrlKey) keys.push('ctrl');
+      if (event.altKey) keys.push('alt');
+      if (event.shiftKey) keys.push('shift');
+      if (event.metaKey) keys.push('meta');
+      keys.push(event.key.toLowerCase());
+
+      const combination = keys.join('+');
+
+      // Check if this combination has a handler
+      if (shortcuts[combination]) {
+        event.preventDefault();
+        shortcuts[combination]();
+      }
+
+      // Also check for single key shortcuts
+      if (shortcuts[event.key]) {
+        event.preventDefault();
+        shortcuts[event.key]();
+      }
+    },
+    [shortcuts, enabled]
+  );
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown, enabled]);
 }
 
 /**

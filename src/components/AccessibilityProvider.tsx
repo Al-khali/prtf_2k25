@@ -2,7 +2,7 @@
 
 import { useEffect, ReactNode } from 'react';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
-import { SkipLinks } from '@/components/SkipLink';
+import SkipLinks from '@/components/SkipLink';
 
 interface AccessibilityProviderProps {
   children: ReactNode;

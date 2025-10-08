@@ -1,142 +1,133 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import dynamic from 'next/dynamic';
+import { ArrowDown, Github, Linkedin, Mail } from 'lucide-react';
 
-// Lazy load 3D components for better performance
-const R3FScene = dynamic(() => import('./R3FScene'), {
-  ssr: false,
-  loading: () => (
-    <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0a0a0f] to-[#0f0f1a]">
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-cyan-500 blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-500 blur-3xl animate-pulse" />
-      </div>
-    </div>
-  ),
-});
-
-const ParticleField = dynamic(() => import('./ParticleField'), {
-  ssr: false,
-});
-
+/**
+ * Modern, Clean Hero Section
+ * Minimal design with focus on typography and clear CTAs
+ */
 export default function HeroSection() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delayChildren: 0.3,
-        staggerChildren: 0.15,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut",
-      },
-    },
-  };
-
   const handleNavigate = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-[#0a0a0f] to-[#0f0f1a]">
-      {/* 3D Particle Field Background */}
-      <R3FScene>
-        <ParticleField count={8000} mouseInfluence={0.3} />
-      </R3FScene>
+    <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
+      {/* Simple gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900 -z-10" />
+      
+      {/* Subtle grid pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.02] -z-10"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+          backgroundSize: '100px 100px',
+        }}
+      />
 
-      {/* Main content overlay */}
-      <motion.div
-        className="relative z-10 text-center px-4 max-w-5xl mx-auto"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Modern Name Display */}
-        <motion.div variants={itemVariants} className="mb-6">
-          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
-              KHALID
-            </span>
-          </h1>
-        </motion.div>
+      {/* Content */}
+      <div className="max-w-5xl mx-auto text-center space-y-8">
+        {/* Name */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight"
+        >
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+            KHALID
+          </span>
+        </motion.h1>
 
-        {/* Role Badge */}
-        <motion.div variants={itemVariants} className="mb-8">
-          <div className="inline-flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-6 py-3">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-            <span className="text-white font-mono text-sm md:text-base">
-              Data Engineer & Creative Technologist
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Subtitle */}
-        <motion.div variants={itemVariants} className="mb-12">
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
-            Turning data into insights, coffee into code, and ideas into reality ✨
+        {/* Title */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="space-y-2"
+        >
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium text-gray-300">
+            Data Engineer & Creative Technologist
+          </h2>
+          <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto">
+            Building scalable data pipelines, crafting indie games, and turning coffee into code.
           </p>
         </motion.div>
 
-        {/* CTA Buttons */}
+        {/* CTAs */}
         <motion.div
-          variants={itemVariants}
-          className="flex flex-wrap gap-4 justify-center items-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="flex flex-wrap items-center justify-center gap-4 pt-8"
         >
           <button
             onClick={() => handleNavigate('projects')}
-            className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105"
+            className="px-8 py-4 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition-all duration-200 hover:scale-105"
           >
             View Projects
           </button>
           <button
-            onClick={() => handleNavigate('about')}
-            className="px-8 py-3 bg-white/5 backdrop-blur-sm border border-white/10 text-white font-semibold rounded-lg hover:bg-white/10 hover:border-white/20 transition-all duration-300"
-          >
-            About Me
-          </button>
-          <button
             onClick={() => handleNavigate('contact')}
-            className="px-8 py-3 bg-white/5 backdrop-blur-sm border border-white/10 text-white font-semibold rounded-lg hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+            className="px-8 py-4 bg-white/10 text-white rounded-lg font-medium border border-white/20 hover:bg-white/20 transition-all duration-200 hover:scale-105"
           >
             Get in Touch
           </button>
         </motion.div>
 
-        {/* Scroll Indicator */}
+        {/* Social Links */}
         <motion.div
-          variants={itemVariants}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="flex items-center justify-center gap-6 pt-8"
         >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            className="flex flex-col items-center gap-2 text-gray-500 cursor-pointer"
-            onClick={() => handleNavigate('about')}
+          <a
+            href="https://github.com/khalid"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-white transition-colors"
+            aria-label="GitHub"
           >
-            <span className="text-xs font-mono">Scroll to explore</span>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </motion.div>
+            <Github className="w-6 h-6" />
+          </a>
+          <a
+            href="https://linkedin.com/in/khalid"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-white transition-colors"
+            aria-label="LinkedIn"
+          >
+            <Linkedin className="w-6 h-6" />
+          </a>
+          <a
+            href="mailto:khalid@example.com"
+            className="text-gray-400 hover:text-white transition-colors"
+            aria-label="Email"
+          >
+            <Mail className="w-6 h-6" />
+          </a>
         </motion.div>
-      </motion.div>
 
-      {/* Subtle gradient overlays */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500 opacity-[0.03] rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500 opacity-[0.03] rounded-full blur-3xl" />
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2"
+        >
+          <motion.button
+            onClick={() => handleNavigate('about')}
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-gray-500 hover:text-white transition-colors"
+            aria-label="Scroll to about section"
+          >
+            <ArrowDown className="w-6 h-6" />
+          </motion.button>
+        </motion.div>
       </div>
     </section>
   );

@@ -2,17 +2,16 @@
 
 import { useRef, useMemo, useEffect, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
+import { Vector3, InstancedMesh, ShaderMaterial, AdditiveBlending, Object3D } from 'three';
+import { useDeviceDetection } from '@/hooks/useDeviceDetection';
+import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface ParticleFieldProps {
-  count?: number;
   mouseInfluence?: number;
 }
 
-interface PerformanceStats {
-  fps: number;
-  frameTime: number;
-}
+
 
 /**
  * ParticleField component with mouse interaction
@@ -27,50 +26,76 @@ interface PerformanceStats {
  * - Performance monitoring
  */
 export default function ParticleField({ 
-  count = 10000,
   mouseInfluence = 0.5 
 }: ParticleFieldProps) {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const meshRef = useRef<InstancedMesh>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
-  const { viewport, size, gl } = useThree();
-  const [performanceStats, setPerformanceStats] = useState<PerformanceStats>({ fps: 60, frameTime: 16 });
-  const frameTimesRef = useRef<number[]>([]);
-  const lastFrameTimeRef = useRef<number>(0);
-
-  // Detect device capabilities
-  const isMobile = size.width < 768;
-  const isTablet = size.width >= 768 && size.width < 1024;
-  const isLowEnd = gl.capabilities.maxTextures < 16; // Simple heuristic for low-end devices
+  const { viewport, size } = useThree();
   
-  // Adaptive particle count based on device and performance
+  // Use new hooks for device detection and performance monitoring
+  const { isMobile, isTablet, isLowEnd, deviceTier } = useDeviceDetection();
+  const { avgFps } = usePerformanceMonitor();
+  const prefersReducedMotion = useReducedMotion();
+  
+  // Track quality adjustments
+  const [currentQuality, setCurrentQuality] = useState<'high' | 'mid' | 'low'>('high');
+  
+  // Adaptive particle count based on device tier and performance
   const getParticleCount = () => {
-    if (isLowEnd) return Math.floor(count / 8); // Very low for weak devices
-    if (isMobile) return Math.floor(count / 4); // Significantly reduce on mobile
-    if (isTablet) return Math.floor(count / 2); // Moderate reduction on tablet
-    return count;
+    // If low-end device, return 0 to trigger CSS fallback
+    if (isLowEnd) return 0;
+    
+    // Adjust based on current quality setting
+    const baseCount = isMobile ? 2000 : isTablet ? 5000 : 10000;
+    
+    if (currentQuality === 'low') return Math.floor(baseCount * 0.5);
+    if (currentQuality === 'mid') return Math.floor(baseCount * 0.75);
+    return baseCount;
   };
   
   const particleCount = getParticleCount();
 
-  // Performance monitoring
+  // Dynamic quality adjustment based on performance
   useEffect(() => {
-    const logPerformance = () => {
-      if (frameTimesRef.current.length > 0) {
-        const avgFrameTime = frameTimesRef.current.reduce((a, b) => a + b, 0) / frameTimesRef.current.length;
-        const fps = Math.round(1000 / avgFrameTime);
-        
+    if (isLowEnd) return; // Skip if using CSS fallback
+    
+    // Reduce quality if FPS is consistently low
+    if (avgFps < 30 && currentQuality !== 'low') {
+      if (currentQuality === 'high') {
+        setCurrentQuality('mid');
         if (process.env.NODE_ENV === 'development') {
-          console.log(`[ParticleField] Performance: ${fps} FPS, ${avgFrameTime.toFixed(2)}ms frame time, ${particleCount} particles`);
+          console.warn(`[ParticleField] Reducing quality to mid due to low FPS: ${avgFps}`);
         }
-        
-        setPerformanceStats({ fps, frameTime: avgFrameTime });
-        frameTimesRef.current = [];
+      } else if (currentQuality === 'mid') {
+        setCurrentQuality('low');
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`[ParticleField] Reducing quality to low due to low FPS: ${avgFps}`);
+        }
       }
-    };
-
-    const interval = setInterval(logPerformance, 5000); // Log every 5 seconds
-    return () => clearInterval(interval);
-  }, [particleCount]);
+    }
+    
+    // Increase quality if performance improves
+    if (avgFps > 50 && currentQuality !== 'high') {
+      if (currentQuality === 'low') {
+        setCurrentQuality('mid');
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`[ParticleField] Increasing quality to mid, FPS: ${avgFps}`);
+        }
+      } else if (currentQuality === 'mid') {
+        setCurrentQuality('high');
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`[ParticleField] Increasing quality to high, FPS: ${avgFps}`);
+        }
+      }
+    }
+  }, [avgFps, currentQuality, isLowEnd]);
+  
+  // Performance logging
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[ParticleField] Device: ${deviceTier}, Quality: ${currentQuality}, Particles: ${particleCount}, FPS: ${avgFps}`);
+    }
+  }, [deviceTier, currentQuality, particleCount, avgFps]);
 
   // Generate particle positions and velocities
   const particles = useMemo(() => {
@@ -84,9 +109,9 @@ export default function ParticleField({
       const vz = (Math.random() - 0.5) * 0.02;
       
       temp.push({
-        position: new THREE.Vector3(x, y, z),
-        velocity: new THREE.Vector3(vx, vy, vz),
-        originalPosition: new THREE.Vector3(x, y, z),
+        position: new Vector3(x, y, z),
+        velocity: new Vector3(vx, vy, vz),
+        originalPosition: new Vector3(x, y, z),
       });
     }
     return temp;
@@ -94,7 +119,7 @@ export default function ParticleField({
 
   // Holographic gradient shader material
   const shaderMaterial = useMemo(() => {
-    return new THREE.ShaderMaterial({
+    return new ShaderMaterial({
       uniforms: {
         time: { value: 0 },
       },
@@ -140,7 +165,7 @@ export default function ParticleField({
         }
       `,
       transparent: true,
-      blending: THREE.AdditiveBlending,
+      blending: AdditiveBlending,
       depthWrite: false,
     });
   }, []);
@@ -160,28 +185,22 @@ export default function ParticleField({
     }
   }, [size, isMobile]);
 
-  // Animation loop with performance tracking
+  // Animation loop
   useFrame((state) => {
     if (!meshRef.current) return;
 
-    // Track frame time for performance monitoring
-    const currentTime = performance.now();
-    if (lastFrameTimeRef.current > 0) {
-      const frameTime = currentTime - lastFrameTimeRef.current;
-      frameTimesRef.current.push(frameTime);
-      
-      // Keep only last 60 frames
-      if (frameTimesRef.current.length > 60) {
-        frameTimesRef.current.shift();
-      }
-    }
-    lastFrameTimeRef.current = currentTime;
-
     const time = state.clock.getElapsedTime();
+    
+    // If user prefers reduced motion, slow down or stop animations
+    if (prefersReducedMotion) {
+      shaderMaterial.uniforms.time.value = time * 0.1; // Very slow animation
+      return; // Skip particle movement
+    }
+    
     shaderMaterial.uniforms.time.value = time;
 
-    const dummy = new THREE.Object3D();
-    const mouse3D = new THREE.Vector3(
+    const dummy = new Object3D();
+    const mouse3D = new Vector3(
       mouseRef.current.x * viewport.width / 2,
       mouseRef.current.y * viewport.height / 2,
       0
@@ -196,7 +215,7 @@ export default function ParticleField({
       if (!isMobile) {
         const distance = particle.position.distanceTo(mouse3D);
         if (distance < 3) {
-          const direction = new THREE.Vector3()
+          const direction = new Vector3()
             .subVectors(particle.position, mouse3D)
             .normalize();
           particle.position.add(direction.multiplyScalar(mouseInfluence * 0.1));
@@ -215,7 +234,7 @@ export default function ParticleField({
       }
 
       // Gentle pull back to original position
-      const returnForce = new THREE.Vector3()
+      const returnForce = new Vector3()
         .subVectors(particle.originalPosition, particle.position)
         .multiplyScalar(0.001);
       particle.velocity.add(returnForce);
@@ -232,22 +251,26 @@ export default function ParticleField({
     meshRef.current.instanceMatrix.needsUpdate = true;
   });
 
+  // If low-end device or no particles, return null (R3FScene will handle fallback)
+  if (isLowEnd || particleCount === 0) {
+    return null;
+  }
+
   return (
     <>
       <instancedMesh
         ref={meshRef}
         args={[undefined, undefined, particleCount]}
         material={shaderMaterial}
-        frustumCulled={true} // Optimize with frustum culling
+        frustumCulled={true}
       >
-        {/* Use low-poly sphere for better performance */}
         <sphereGeometry args={[0.05, isMobile ? 4 : 8, isMobile ? 4 : 8]} />
       </instancedMesh>
       
-      {/* Performance warning in development */}
-      {process.env.NODE_ENV === 'development' && performanceStats.fps < 30 && (
+      {/* Quality indicator in development */}
+      {process.env.NODE_ENV === 'development' && currentQuality !== 'high' && (
         <group>
-          {/* This is just for development monitoring, won't render anything visible */}
+          {/* Development monitoring only */}
         </group>
       )}
     </>

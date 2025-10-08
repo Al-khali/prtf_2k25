@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { PerspectiveCamera } from '@react-three/drei';
 import { Suspense, useEffect, useState } from 'react';
 import { useDeviceCapabilities } from '@/hooks/useDeviceCapabilities';
+import CSSGradientFallback from './CSSGradientFallback';
 
 interface R3FSceneProps {
   children: React.ReactNode;
@@ -31,32 +32,7 @@ export default function R3FScene({ children, fallback }: R3FSceneProps) {
   if (!shouldRender3D) {
     return (
       <div className="absolute inset-0 -z-10">
-        {fallback || (
-          <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
-            <div className="absolute inset-0 opacity-20">
-              <div 
-                className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-holo-cyan blur-3xl"
-                style={{
-                  animation: prefersReducedMotion ? 'none' : 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-                }}
-              />
-              <div 
-                className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-holo-magenta blur-3xl"
-                style={{
-                  animation: prefersReducedMotion ? 'none' : 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                  animationDelay: '1s'
-                }}
-              />
-              <div 
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-holo-violet blur-3xl opacity-10"
-                style={{
-                  animation: prefersReducedMotion ? 'none' : 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                  animationDelay: '2s'
-                }}
-              />
-            </div>
-          </div>
-        )}
+        {fallback || <CSSGradientFallback />}
       </div>
     );
   }
@@ -90,16 +66,6 @@ export default function R3FScene({ children, fallback }: R3FSceneProps) {
         onCreated={({ gl }) => {
           // Additional WebGL optimizations
           gl.setClearColor('#0c0d10', 1);
-          
-          // Log renderer info in development
-          if (process.env.NODE_ENV === 'development') {
-            console.log('[R3FScene] WebGL Renderer:', {
-              vendor: gl.getParameter(gl.VENDOR),
-              renderer: gl.getParameter(gl.RENDERER),
-              maxTextures: gl.capabilities.maxTextures,
-              maxVertexUniforms: gl.capabilities.maxVertexUniforms,
-            });
-          }
         }}
       >
         {/* Camera setup */}

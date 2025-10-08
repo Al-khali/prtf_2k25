@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ProjectCard } from '@/components/ProjectCard'
+import ProjectCard from '@/components/ProjectCard'
 
 // Import projects from centralized data
 import { projects } from '@/lib/projects-data';
@@ -78,7 +78,7 @@ export default function Projects() {
             <ProjectCard
               key={project.id}
               project={project}
-              delay={index * 0.1}
+              index={index}
             />
           ))}
         </motion.div>

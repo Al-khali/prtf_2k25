@@ -4,43 +4,69 @@
  */
 
 /**
- * Generate a simple blur data URL for placeholder
- * This creates a tiny 10x10 gradient that can be used as a blur placeholder
+ * Generate a blur data URL for placeholder using SVG
+ * Creates a gradient that matches the design system colors
  */
-export function generateBlurDataURL(color1 = '#00f5ff', color2 = '#ff00ff'): string {
-  // Create a simple SVG gradient
-  const svg = `
-    <svg width="10" height="10" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:${color1};stop-opacity:0.3" />
-          <stop offset="100%" style="stop-color:${color2};stop-opacity:0.3" />
-        </linearGradient>
-      </defs>
-      <rect width="10" height="10" fill="url(#grad)" />
-    </svg>
-  `.trim();
+export function generateBlurDataURL(color1: string, color2: string, color3?: string): string {
+  const svg = color3
+    ? `<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:${color1};stop-opacity:0.4" />
+            <stop offset="50%" style="stop-color:${color2};stop-opacity:0.4" />
+            <stop offset="100%" style="stop-color:${color3};stop-opacity:0.4" />
+          </linearGradient>
+        </defs>
+        <rect width="40" height="40" fill="url(#grad)" />
+      </svg>`
+    : `<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:${color1};stop-opacity:0.4" />
+            <stop offset="100%" style="stop-color:${color2};stop-opacity:0.4" />
+          </linearGradient>
+        </defs>
+        <rect width="40" height="40" fill="url(#grad)" />
+      </svg>`;
 
-  // Convert to base64
-  const base64 = Buffer.from(svg).toString('base64');
-  return `data:image/svg+xml;base64,${base64}`;
+  // Convert to base64 - works in both browser and Node.js
+  if (typeof window === 'undefined') {
+    // Server-side (Node.js)
+    const base64 = Buffer.from(svg).toString('base64');
+    return `data:image/svg+xml;base64,${base64}`;
+  } else {
+    // Client-side (browser)
+    const base64 = btoa(svg);
+    return `data:image/svg+xml;base64,${base64}`;
+  }
 }
 
 /**
  * Get blur placeholder based on project category
+ * Uses design system colors for consistency
  */
 export function getCategoryBlurPlaceholder(category: string): string {
-  const colorMap: Record<string, [string, string]> = {
-    'data-ai': ['#00f5ff', '#8b00ff'],
-    'games': ['#ff00ff', '#ff1493'],
-    'music': ['#ff1493', '#ff4500'],
-    'design': ['#ffa500', '#ffd700'],
-    'security': ['#ff4500', '#ff6347'],
-    'default': ['#00f5ff', '#ff00ff'],
+  const placeholders: Record<string, string> = {
+    // Data & AI - Cyan to Purple gradient (holographic tech feel)
+    'data-ai': generateBlurDataURL('#00f5ff', '#8b00ff', '#00d4ff'),
+    
+    // Games - Purple to Magenta gradient (vibrant gaming aesthetic)
+    'games': generateBlurDataURL('#8b00ff', '#ff00ff', '#ff1493'),
+    
+    // Music - Cyan to Orange gradient (audio spectrum feel)
+    'music': generateBlurDataURL('#00f5ff', '#ff1493', '#ff4500'),
+    
+    // Design - Orange to Yellow gradient (creative warmth)
+    'design': generateBlurDataURL('#ff4500', '#ffa500', '#ffd700'),
+    
+    // Security - Green to Cyan gradient (matrix/terminal aesthetic)
+    'security': generateBlurDataURL('#00ff9f', '#00f5ff', '#00d4ff'),
+    
+    // Default - Holographic cyan to magenta
+    'default': generateBlurDataURL('#00f5ff', '#ff00ff'),
   };
 
-  const [color1, color2] = colorMap[category] || colorMap.default;
-  return generateBlurDataURL(color1, color2);
+  return placeholders[category] || placeholders['default'];
 }
 
 /**

@@ -1,19 +1,33 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import HeroSection from '@/components/HeroSection';
-import AboutSection from '@/components/AboutSection';
-import { ProjectsSection } from '@/components/ProjectsSection';
-import { AITerminal } from '@/components/AITerminal';
-import MusicSection from '@/components/MusicSection';
-import ContactSection from '@/components/ContactSection';
 import Navigation from '@/components/Navigation';
 import { konamiDetector, easterEggs } from '@/utils/konamiCode';
+import { LazySection } from '@/components/LazySection';
+import { 
+  HeroSkeleton, 
+  SectionSkeleton, 
+  TerminalSkeleton, 
+  MusicPlayerSkeleton 
+} from '@/components/skeletons';
+import SkipLinks from '@/components/SkipLink';
+import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
+
+// Lazy load heavy components
+const HeroSection = lazy(() => import('@/components/HeroSection'));
+const AboutSection = lazy(() => import('@/components/AboutSection'));
+const ProjectsSection = lazy(() => import('@/components/ProjectsSection').then(module => ({ default: module.ProjectsSection })));
+const AITerminal = lazy(() => import('@/components/AITerminal').then(module => ({ default: module.AITerminal })));
+const MusicSection = lazy(() => import('@/components/MusicSection'));
+const ContactSection = lazy(() => import('@/components/ContactSection'));
 
 export default function Home() {
   const [showKonamiMessage, setShowKonamiMessage] = useState(false);
   const [theme, setTheme] = useState<'normal' | 'riced'>('normal');
+
+  // Enable keyboard navigation detection
+  useKeyboardNavigation();
 
   useEffect(() => {
     // Initialize Konami code detector
@@ -28,13 +42,17 @@ export default function Home() {
   }, [theme]);
 
   return (
-    <main 
-      id="main-content" 
-      className={`relative ${theme === 'riced' ? 'riced-theme' : ''}`}
-      role="main"
-      aria-label="Main content"
-    >
-      {/* Riced mode header */}
+    <>
+      {/* Skip Links for keyboard navigation */}
+      <SkipLinks />
+      
+      <main 
+        id="main-content" 
+        className={`relative ${theme === 'riced' ? 'riced-theme' : ''}`}
+        role="main"
+        aria-label="Main content"
+      >
+        {/* Riced mode header */}
       {theme === 'riced' && (
         <motion.div
           initial={{ y: -100 }}
@@ -82,28 +100,40 @@ export default function Home() {
       </AnimatePresence>
 
       {/* Navigation */}
-      <Navigation variant="dots" />
+      <Navigation variant="header" />
 
       {/* Sections */}
       <div className={theme === 'riced' ? 'pt-12' : ''}>
-        <div id="hero">
-          <HeroSection />
-        </div>
-        <div id="about">
-          <AboutSection />
-        </div>
-        <div id="projects">
-          <ProjectsSection />
-        </div>
-        <div id="terminal">
-          <AITerminal />
-        </div>
-        <div id="music">
-          <MusicSection />
-        </div>
-        <div id="contact">
-          <ContactSection />
-        </div>
+        <section id="hero" tabIndex={-1}>
+          <LazySection fallback={<HeroSkeleton />} preloadDistance={0}>
+            <HeroSection />
+          </LazySection>
+        </section>
+        <section id="about" tabIndex={-1}>
+          <LazySection fallback={<SectionSkeleton height="min-h-screen" />} preloadDistance={200}>
+            <AboutSection />
+          </LazySection>
+        </section>
+        <section id="projects" tabIndex={-1}>
+          <LazySection fallback={<SectionSkeleton height="min-h-screen" />} preloadDistance={200}>
+            <ProjectsSection />
+          </LazySection>
+        </section>
+        <section id="terminal" tabIndex={-1}>
+          <LazySection fallback={<TerminalSkeleton />} preloadDistance={200}>
+            <AITerminal />
+          </LazySection>
+        </section>
+        <section id="music" tabIndex={-1}>
+          <LazySection fallback={<MusicPlayerSkeleton />} preloadDistance={200}>
+            <MusicSection />
+          </LazySection>
+        </section>
+        <section id="contact" tabIndex={-1}>
+          <LazySection fallback={<SectionSkeleton height="min-h-[600px]" />} preloadDistance={200}>
+            <ContactSection />
+          </LazySection>
+        </section>
       </div>
 
       {/* Floating easter egg hints - much more subtle */}
@@ -154,6 +184,7 @@ export default function Home() {
           }
         `}</style>
       )}
-    </main>
+      </main>
+    </>
   );
 }

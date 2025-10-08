@@ -1,12 +1,13 @@
 'use client';
 
 import { motion, MotionProps } from 'framer-motion';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface MotionWrapperProps extends MotionProps {
   children: ReactNode;
   as?: keyof typeof motion;
-  reduceMotion?: boolean;
+  respectReducedMotion?: boolean;
 }
 
 /**
@@ -16,7 +17,7 @@ interface MotionWrapperProps extends MotionProps {
 export default function MotionWrapper({
   children,
   as = 'div',
-  reduceMotion = true,
+  respectReducedMotion = true,
   initial,
   animate,
   exit,
@@ -24,26 +25,12 @@ export default function MotionWrapper({
   variants,
   ...props
 }: MotionWrapperProps) {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    if (!reduceMotion) return;
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches);
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [reduceMotion]);
+  const prefersReducedMotion = useReducedMotion();
 
   const MotionComponent = motion[as] as any;
 
   // If user prefers reduced motion, render without animations
-  if (prefersReducedMotion && reduceMotion) {
+  if (prefersReducedMotion && respectReducedMotion) {
     return (
       <MotionComponent {...props}>
         {children}
@@ -72,19 +59,6 @@ export default function MotionWrapper({
  * @returns Variants or empty object if reduced motion is preferred
  */
 export function useAccessibleVariants<T extends Record<string, any>>(variants: T): T | {} {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches);
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
-
+  const prefersReducedMotion = useReducedMotion();
   return prefersReducedMotion ? {} : variants;
 }

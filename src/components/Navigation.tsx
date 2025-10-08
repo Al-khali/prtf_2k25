@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSmoothScroll } from '@/hooks/useScrollParallax';
+import { Menu, X, Volume2, VolumeX } from 'lucide-react';
+import { useAmbientMusic } from '@/contexts/AmbientMusicContext';
 
 interface NavItem {
   id: string;
@@ -20,19 +22,29 @@ const navItems: NavItem[] = [
 ];
 
 interface NavigationProps {
-  variant?: 'dots' | 'menu';
+  variant?: 'header' | 'dots';
   className?: string;
 }
 
-export default function Navigation({ variant = 'dots', className = '' }: NavigationProps) {
+/**
+ * Modern Navigation Component
+ * Features fixed header with glass morphism, mobile menu, and smooth scrolling
+ */
+export default function Navigation({ variant = 'header', className = '' }: NavigationProps) {
   const [currentSection, setCurrentSection] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { scrollTo } = useSmoothScroll();
+  const { isMuted, toggleMute } = useAmbientMusic();
 
   useEffect(() => {
     const handleScroll = () => {
+      // Update scroll state for header background
+      setIsScrolled(window.scrollY > 50);
+
+      // Update current section
       const sections = document.querySelectorAll('section[id]');
-      const scrollPosition = window.scrollY + window.innerHeight / 2;
+      const scrollPosition = window.scrollY + window.innerHeight / 3;
 
       sections.forEach((section, index) => {
         const sectionTop = section.getBoundingClientRect().top + window.scrollY;
@@ -57,6 +69,7 @@ export default function Navigation({ variant = 'dots', className = '' }: Navigat
   };
 
   if (variant === 'dots') {
+    // Keep dots variant for backward compatibility
     return (
       <nav
         className={`fixed right-8 top-1/2 transform -translate-y-1/2 z-40 space-y-4 ${className}`}
@@ -69,7 +82,7 @@ export default function Navigation({ variant = 'dots', className = '' }: Navigat
             whileTap={{ scale: 0.9 }}
             className={`block w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${
               currentSection === index
-                ? 'bg-holo-cyan glow-cyan'
+                ? 'bg-cyan-400 shadow-lg shadow-cyan-500/50'
                 : 'bg-gray-600 hover:bg-gray-400'
             }`}
             onClick={() => handleNavClick(item.section, index)}
@@ -83,32 +96,88 @@ export default function Navigation({ variant = 'dots', className = '' }: Navigat
 
   return (
     <>
-      {/* Menu Toggle Button */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className={`fixed top-8 right-8 z-50 glass-intense p-3 rounded-lg hover:glow-cyan transition-all ${className}`}
-        aria-label="Toggle navigation menu"
-        aria-expanded={isMenuOpen}
+      {/* Modern Fixed Header */}
+      <motion.header
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled
+            ? 'bg-black/80 backdrop-blur-lg border-b border-white/10 shadow-lg'
+            : 'bg-transparent'
+        } ${className}`}
       >
-        <div className="w-6 h-5 flex flex-col justify-between">
-          <motion.span
-            animate={isMenuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-            className="w-full h-0.5 bg-holo-cyan block transition-all"
-          />
-          <motion.span
-            animate={isMenuOpen ? { opacity: 0 } : { opacity: 1 }}
-            className="w-full h-0.5 bg-holo-cyan block transition-all"
-          />
-          <motion.span
-            animate={isMenuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-            className="w-full h-0.5 bg-holo-cyan block transition-all"
-          />
-        </div>
-      </motion.button>
+        <nav className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo / Name */}
+            <motion.button
+              onClick={() => handleNavClick('hero', 0)}
+              className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              KHALID
+            </motion.button>
 
-      {/* Menu Overlay */}
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-1">
+              {navItems.slice(1).map((item, index) => (
+                <motion.button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.section, index + 1)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    currentSection === index + 1
+                      ? 'bg-white/10 text-cyan-400'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {item.label}
+                </motion.button>
+              ))}
+              
+              {/* Music Toggle Button */}
+              <motion.button
+                onClick={toggleMute}
+                className="ml-2 p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label={isMuted ? 'Unmute ambient music' : 'Mute ambient music'}
+                title={isMuted ? 'Unmute ambient music' : 'Mute ambient music'}
+              >
+                {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+              </motion.button>
+            </div>
+
+            {/* Mobile Controls */}
+            <div className="md:hidden flex items-center gap-2">
+              {/* Music Toggle Button */}
+              <motion.button
+                onClick={toggleMute}
+                className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label={isMuted ? 'Unmute ambient music' : 'Mute ambient music'}
+              >
+                {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+              </motion.button>
+              
+              {/* Menu Button */}
+              <motion.button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </motion.button>
+            </div>
+          </div>
+        </nav>
+      </motion.header>
+
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
@@ -118,54 +187,56 @@ export default function Navigation({ variant = 'dots', className = '' }: Navigat
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden"
             />
 
             {/* Menu Panel */}
-            <motion.nav
+            <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-80 glass-intense border-l border-glass-border z-40 p-8"
-              aria-label="Main navigation"
+              className="fixed top-0 right-0 bottom-0 w-80 bg-black/95 backdrop-blur-xl border-l border-white/10 z-50 md:hidden"
             >
-              <div className="flex flex-col h-full">
-                <div className="mb-8">
-                  <h2 className="text-2xl font-space font-bold holo-text">Navigation</h2>
-                  <p className="text-sm text-text-tertiary mt-2">Jump to section</p>
+              <div className="flex flex-col h-full p-6">
+                {/* Close button */}
+                <div className="flex justify-end mb-8">
+                  <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
 
-                <ul className="flex-1 space-y-4">
+                {/* Menu Items */}
+                <nav className="flex-1 space-y-2">
                   {navItems.map((item, index) => (
-                    <motion.li
+                    <motion.button
                       key={item.id}
+                      onClick={() => handleNavClick(item.section, index)}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
+                      className={`w-full text-left px-4 py-3 rounded-lg text-lg font-medium transition-all ${
+                        currentSection === index
+                          ? 'bg-white/10 text-cyan-400 border border-cyan-500/30'
+                          : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      }`}
                     >
-                      <button
-                        onClick={() => handleNavClick(item.section, index)}
-                        className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
-                          currentSection === index
-                            ? 'glass-intense text-holo-cyan glow-cyan'
-                            : 'text-text-secondary hover:glass hover:text-holo-cyan'
-                        }`}
-                        aria-current={currentSection === index ? 'true' : undefined}
-                      >
-                        <span className="font-space font-medium">{item.label}</span>
-                      </button>
-                    </motion.li>
+                      {item.label}
+                    </motion.button>
                   ))}
-                </ul>
+                </nav>
 
-                <div className="mt-8 pt-8 border-t border-glass-border">
-                  <p className="text-xs text-text-muted terminal-font">
-                    Tip: Use ↑↑↓↓←→←→BA for a surprise
+                {/* Footer */}
+                <div className="pt-6 border-t border-white/10">
+                  <p className="text-xs text-gray-500 font-mono">
+                    💡 Tip: Try the Konami code
                   </p>
                 </div>
               </div>
-            </motion.nav>
+            </motion.div>
           </>
         )}
       </AnimatePresence>
@@ -173,6 +244,9 @@ export default function Navigation({ variant = 'dots', className = '' }: Navigat
   );
 }
 
+/**
+ * Section Navigator - CTA buttons for quick navigation
+ */
 interface SectionNavigatorProps {
   onNavigate: (section: 'about' | 'projects' | 'terminal') => void;
 }
@@ -191,7 +265,7 @@ export function SectionNavigator({ onNavigate }: SectionNavigatorProps) {
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => handleNavigate('about')}
-        className="glass-intense px-6 py-3 rounded-lg font-space font-medium text-holo-cyan hover:glow-cyan transition-all"
+        className="px-6 py-3 bg-white/5 border border-white/10 rounded-lg font-medium text-cyan-400 hover:bg-white/10 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/20 transition-all"
       >
         About
       </motion.button>
@@ -199,15 +273,15 @@ export function SectionNavigator({ onNavigate }: SectionNavigatorProps) {
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => handleNavigate('projects')}
-        className="glass-intense px-6 py-3 rounded-lg font-space font-medium text-holo-magenta hover:glow-magenta transition-all"
+        className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg font-medium text-white hover:shadow-lg hover:shadow-cyan-500/30 transition-all"
       >
-        Projects
+        View Projects
       </motion.button>
       <motion.button
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => handleNavigate('terminal')}
-        className="glass-intense px-6 py-3 rounded-lg font-space font-medium text-terminal-green hover:glow-cyan transition-all"
+        className="px-6 py-3 bg-white/5 border border-white/10 rounded-lg font-medium text-green-400 hover:bg-white/10 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/20 transition-all"
       >
         Open Terminal
       </motion.button>

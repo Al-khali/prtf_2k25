@@ -1,5 +1,10 @@
 import type { NextConfig } from "next";
 
+// Bundle analyzer
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 const nextConfig: NextConfig = {
   // Enable React strict mode for better development experience
   reactStrictMode: true,
@@ -25,7 +30,13 @@ const nextConfig: NextConfig = {
   // Experimental features
   experimental: {
     // Enable optimized package imports
-    optimizePackageImports: ['framer-motion', '@react-three/fiber', '@react-three/drei'],
+    optimizePackageImports: [
+      'framer-motion',
+      '@react-three/fiber',
+      '@react-three/drei',
+      'three',
+      'recharts',
+    ],
   },
   
   // Headers for security and performance
@@ -56,4 +67,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

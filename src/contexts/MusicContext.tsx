@@ -9,6 +9,8 @@ interface MusicContextType {
   currentTrackId: string | null;
   currentTrack: Track | null;
   isPlaying: boolean;
+  isLoading: boolean;
+  loadError: string | null;
   volume: number;
   isMuted: boolean;
   currentTime: number;
@@ -24,6 +26,7 @@ interface MusicContextType {
   setVolume: (volume: number) => void;
   toggleMute: () => void;
   seek: (time: number) => void;
+  retryLoad: () => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -41,6 +44,8 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
   const [currentPlaylistId, setCurrentPlaylistId] = useState<string | null>(null);
   const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [volume, setVolumeState] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -49,6 +54,7 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
 
   const audioManagerRef = useRef<AudioManager | null>(null);
   const timeUpdateIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const hasPreloadedRef = useRef(false);
 
   // Initialize audio manager
   useEffect(() => {
@@ -120,6 +126,30 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
     setIsPlaying(true);
   }, [currentPlaylistId, currentTrackId]);
 
+  // Preload first track of each playlist on mount
+  useEffect(() => {
+    if (hasPreloadedRef.current || !audioManagerRef.current) return;
+
+    const preloadFirstTracks = async () => {
+      const manager = audioManagerRef.current;
+      if (!manager) return;
+
+      // Preload first track of each playlist
+      for (const playlist of playlists) {
+        if (playlist.tracks.length > 0) {
+          try {
+            await manager.preloadTrack(playlist.tracks[0]);
+          } catch (error) {
+            console.warn(`Failed to preload first track of ${playlist.id}:`, error);
+          }
+        }
+      }
+    };
+
+    hasPreloadedRef.current = true;
+    preloadFirstTracks();
+  }, []);
+
   // Load track when it changes
   useEffect(() => {
     if (!currentTrack || !audioManagerRef.current) return;
@@ -128,49 +158,62 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
       const manager = audioManagerRef.current;
       if (!manager) return;
 
-      // Load track
-      await manager.loadTrack(currentTrack);
+      try {
+        setIsLoading(true);
+        setLoadError(null);
 
-      // Initialize audio context and analyser on first interaction
-      if (!analyser) {
-        const newAnalyser = manager.initializeAudioContext();
-        setAnalyser(newAnalyser);
-      }
+        // Load track with retry logic
+        await manager.loadTrack(currentTrack);
 
-      // Set up event listeners
-      const handleLoadedMetadata = () => {
-        setDuration(manager.getDuration());
-      };
+        // Initialize audio context and analyser on first interaction
+        if (!analyser) {
+          const newAnalyser = manager.initializeAudioContext();
+          setAnalyser(newAnalyser);
+        }
 
-      const handleEnded = () => {
+        // Set up event listeners
+        const handleLoadedMetadata = () => {
+          setDuration(manager.getDuration());
+          setIsLoading(false);
+        };
+
+        const handleEnded = () => {
+          setIsPlaying(false);
+          handleTrackEnded();
+        };
+
+        const handlePlay = () => {
+          setIsPlaying(true);
+        };
+
+        const handlePause = () => {
+          setIsPlaying(false);
+        };
+
+        manager.addEventListener('loadedmetadata', handleLoadedMetadata);
+        manager.addEventListener('ended', handleEnded);
+        manager.addEventListener('play', handlePlay);
+        manager.addEventListener('pause', handlePause);
+
+        // Auto-play if was playing
+        if (isPlaying) {
+          await manager.play();
+        }
+
+        setIsLoading(false);
+
+        return () => {
+          manager.removeEventListener('loadedmetadata', handleLoadedMetadata);
+          manager.removeEventListener('ended', handleEnded);
+          manager.removeEventListener('play', handlePlay);
+          manager.removeEventListener('pause', handlePause);
+        };
+      } catch (error) {
+        console.error('Failed to load track:', error);
+        setLoadError(error instanceof Error ? error.message : 'Failed to load audio');
+        setIsLoading(false);
         setIsPlaying(false);
-        handleTrackEnded();
-      };
-
-      const handlePlay = () => {
-        setIsPlaying(true);
-      };
-
-      const handlePause = () => {
-        setIsPlaying(false);
-      };
-
-      manager.addEventListener('loadedmetadata', handleLoadedMetadata);
-      manager.addEventListener('ended', handleEnded);
-      manager.addEventListener('play', handlePlay);
-      manager.addEventListener('pause', handlePause);
-
-      // Auto-play if was playing
-      if (isPlaying) {
-        await manager.play();
       }
-
-      return () => {
-        manager.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        manager.removeEventListener('ended', handleEnded);
-        manager.removeEventListener('play', handlePlay);
-        manager.removeEventListener('pause', handlePause);
-      };
     };
 
     loadAndPlay();
@@ -286,11 +329,28 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Retry loading current track
+  const retryLoad = useCallback(() => {
+    if (!currentTrack) return;
+    
+    setLoadError(null);
+    setIsLoading(true);
+    
+    // Trigger reload by updating track ID
+    const trackId = currentTrackId;
+    setCurrentTrackId(null);
+    setTimeout(() => {
+      setCurrentTrackId(trackId);
+    }, 100);
+  }, [currentTrack, currentTrackId]);
+
   const value: MusicContextType = {
     currentPlaylistId,
     currentTrackId,
     currentTrack,
     isPlaying,
+    isLoading,
+    loadError,
     volume,
     isMuted,
     currentTime,
@@ -304,6 +364,7 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
     setVolume,
     toggleMute,
     seek,
+    retryLoad,
   };
 
   return <MusicContext.Provider value={value}>{children}</MusicContext.Provider>;

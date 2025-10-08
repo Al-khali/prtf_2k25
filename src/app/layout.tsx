@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Space_Grotesk, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { MusicProvider } from "@/contexts/MusicContext";
+import { AmbientMusicProvider } from "@/contexts/AmbientMusicContext";
 import AccessibilityProvider from "@/components/AccessibilityProvider";
+import { criticalCSS } from "@/lib/critical-css";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -55,13 +57,33 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Critical CSS inlined for immediate render */}
+        <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
+        
+        {/* DNS prefetch for external domains */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="dns-prefetch" href="https://api.openai.com" />
+        <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />
+        
+        {/* Preconnect to critical origins */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Prefetch likely next pages */}
+        <link rel="prefetch" href="/projects" />
+        <link rel="prefetch" href="/about" />
+      </head>
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${ibmPlexMono.variable} antialiased`}
       >
         <AccessibilityProvider>
-          <MusicProvider>
-            {children}
-          </MusicProvider>
+          <AmbientMusicProvider>
+            <MusicProvider>
+              {children}
+            </MusicProvider>
+          </AmbientMusicProvider>
         </AccessibilityProvider>
       </body>
     </html>

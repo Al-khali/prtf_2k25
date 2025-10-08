@@ -3,12 +3,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { Project } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { getCategoryBlurPlaceholder, responsiveImageSizes, imageQuality } from '@/lib/image-utils';
+import ImageWithFallback from '@/components/ImageWithFallback';
 
 interface ProjectDetailClientProps {
   project: Project;
@@ -81,9 +81,9 @@ const ProjectDetailClient: React.FC<ProjectDetailClientProps> = ({ project }) =>
     <div className="min-h-screen bg-[#0c0d10] text-white">
       {/* Hero Section */}
       <div className="relative w-full h-[60vh] overflow-hidden">
-        {/* Optimized hero image */}
+        {/* Optimized hero image with fallback */}
         {project.image && (
-          <Image
+          <ImageWithFallback
             src={project.image}
             alt={project.title}
             fill
@@ -93,6 +93,8 @@ const ProjectDetailClient: React.FC<ProjectDetailClientProps> = ({ project }) =>
             blurDataURL={getCategoryBlurPlaceholder(project.category)}
             className="object-cover"
             priority
+            category={project.category}
+            fallbackTitle={project.title}
           />
         )}
         
