@@ -39,7 +39,7 @@ export default function Projects() {
           className="mb-12"
         >
           <h1 className="text-4xl font-bold mb-4 text-cyan-400">~/projects</h1>
-          <p className="text-lg">A collection of things I've built while caffeinated</p>
+          <p className="text-lg">A collection of things I&apos;ve built while caffeinated</p>
         </motion.div>
 
         <div className="mb-8 flex flex-wrap gap-4 items-center">
@@ -74,11 +74,14 @@ export default function Projects() {
           layout
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {filteredProjects.map((project, index) => (
+          {filteredProjects.map((project) => (
             <ProjectCard
               key={project.id}
-              project={project}
-              index={index}
+              imageUrl={project.image}
+              title={project.title}
+              description={project.description}
+              tags={project.tags}
+              projectUrl={project.link ?? project.github ?? '#'}
             />
           ))}
         </motion.div>

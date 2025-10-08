@@ -17,7 +17,7 @@ interface R3FSceneProps {
  * Automatically falls back to static gradient on unsupported or low-end devices
  */
 export default function R3FScene({ children, fallback }: R3FSceneProps) {
-  const { isMobile, isLowEnd, supportsWebGL, prefersReducedMotion } = useDeviceCapabilities();
+  const { isMobile, isLowEnd, supportsWebGL } = useDeviceCapabilities();
   const [shouldRender3D, setShouldRender3D] = useState(true);
 
   useEffect(() => {

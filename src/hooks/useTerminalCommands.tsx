@@ -22,7 +22,7 @@ export interface UseTerminalCommandsReturn {
  */
 export const useTerminalCommands = (): UseTerminalCommandsReturn => {
   const [ricingModeUnlocked, setRicingModeUnlocked] = useState(false);
-  const [clearTrigger, setClearTrigger] = useState(0);
+  const [, setClearTrigger] = useState(0);
 
   const processor = useMemo(() => {
     const proc = new CommandProcessor();

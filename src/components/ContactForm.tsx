@@ -133,7 +133,7 @@ export default function ContactForm() {
       
       {/* Honeypot field - hidden from users */}
       <div className="hidden">
-        <label htmlFor="honeypot">Don't fill this out if you're human:</label>
+  <label htmlFor="honeypot">Don&apos;t fill this out if you&apos;re human:</label>
         <input
           id="honeypot"
           name="honeypot"

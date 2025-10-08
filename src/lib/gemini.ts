@@ -48,7 +48,7 @@ class GeminiService {
         this.genAI = new GoogleGenerativeAI(apiKey);
         this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
       } catch (error) {
-        console.warn('Gemini API not configured, using fallback responses');
+        console.warn('Gemini API not configured, using fallback responses', error);
       }
     }
   }
@@ -104,7 +104,7 @@ class GeminiService {
         return response.text();
         
       } catch (error) {
-        console.warn('Gemini API error, using fallback');
+        console.warn('Gemini API error, using fallback', error);
         return this.getFallbackResponse(question);
       }
     }

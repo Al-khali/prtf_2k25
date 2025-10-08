@@ -11,6 +11,12 @@ export interface DeviceDetection {
   deviceTier: DeviceTier;
 }
 
+type NavigatorConnection = {
+  effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' | string;
+  addEventListener?: (type: 'change', listener: EventListenerOrEventListenerObject) => void;
+  removeEventListener?: (type: 'change', listener: EventListenerOrEventListenerObject) => void;
+};
+
 /**
  * Hook to detect device capabilities and tier for adaptive performance optimization
  * Detects mobile, tablet, low-end devices and calculates overall device tier
@@ -25,17 +31,22 @@ export function useDeviceDetection(): DeviceDetection {
 
   useEffect(() => {
     const checkDevice = () => {
+      const navigatorWithInfo = navigator as Navigator & {
+        deviceMemory?: number;
+        connection?: NavigatorConnection;
+      };
+
       // Detect mobile and tablet based on viewport
       const width = window.innerWidth;
       const isMobile = width < 768;
       const isTablet = width >= 768 && width < 1024;
 
       // Detect low-end devices based on hardware capabilities
-      const hardwareConcurrency = navigator.hardwareConcurrency || 4;
-      const deviceMemory = (navigator as any).deviceMemory || 4;
+      const hardwareConcurrency = navigator.hardwareConcurrency ?? 4;
+      const deviceMemory = navigatorWithInfo.deviceMemory ?? 4;
       
       // Check connection quality if available
-      const connection = (navigator as any).connection;
+      const connection = navigatorWithInfo.connection;
       const effectiveType = connection?.effectiveType;
       const isSlowConnection = 
         effectiveType === '2g' || 
@@ -67,15 +78,20 @@ export function useDeviceDetection(): DeviceDetection {
     window.addEventListener('resize', checkDevice);
     
     // Re-check on connection change if available
-    const connection = (navigator as any).connection;
-    if (connection) {
-      connection.addEventListener('change', checkDevice);
+    const navigatorWithInfo = navigator as Navigator & {
+      connection?: NavigatorConnection;
+    };
+    const connection = navigatorWithInfo.connection;
+    const addConnectionListener = connection?.addEventListener?.bind(connection);
+    const removeConnectionListener = connection?.removeEventListener?.bind(connection);
+    if (addConnectionListener) {
+      addConnectionListener('change', checkDevice);
     }
 
     return () => {
       window.removeEventListener('resize', checkDevice);
-      if (connection) {
-        connection.removeEventListener('change', checkDevice);
+      if (removeConnectionListener) {
+        removeConnectionListener('change', checkDevice);
       }
     };
   }, []);

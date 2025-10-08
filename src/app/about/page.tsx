@@ -1,11 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 export default function About() {
-  const [showEasterEgg, setShowEasterEgg] = useState(false)
-
   const asciiArt = `
 ██╗  ██╗██╗  ██╗ █████╗ ██╗     ██╗██████╗ 
 ██║ ██╔╝██║  ██║██╔══██╗██║     ██║██╔══██╗
@@ -75,7 +72,7 @@ something equally cool).
           transition={{ delay: 2 }}
           className="mt-12 border border-green-600 p-4 rounded"
         >
-          <h3 className="text-cyan-400 mb-4">// Skills & Technologies</h3>
+          <h3 className="text-cyan-400 mb-4">{"// Skills & Technologies"}</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
             <div>
               <h4 className="text-yellow-400">Data Engineering</h4>

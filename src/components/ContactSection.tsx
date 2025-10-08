@@ -70,19 +70,19 @@ export default function ContactSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <span className="text-sm font-mono text-pink-400">// Contact</span>
+              <span className="text-sm font-mono text-pink-400">{"// Contact"}</span>
             </motion.div>
             
             <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-500 to-cyan-600">
-                Let's Connect
+                Let&apos;s Connect
               </span>
             </h2>
             
             <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto">
               Have a project in mind or just want to chat about data, AI, or indie games?
               <br />
-              Drop me a message and let's build something amazing together.
+              Drop me a message and let&apos;s build something amazing together.
             </p>
           </motion.div>
 

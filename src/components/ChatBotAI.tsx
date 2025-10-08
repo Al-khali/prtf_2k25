@@ -64,7 +64,7 @@ export default function ChatBotAI() {
       }
 
       setMessages(prev => [...prev, botMessage])
-    } catch (error) {
+  } catch {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: "🤔 Oups, petit bug ! Réessaie ou contacte Khalid directement si ça persiste.",

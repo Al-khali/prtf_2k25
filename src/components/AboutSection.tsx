@@ -48,7 +48,7 @@ export default function AboutSection() {
         >
           <div className="inline-block mb-4">
             <span className="text-sm font-mono text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/20">
-              // About Me
+              {"// About Me"}
             </span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
@@ -154,7 +154,7 @@ export default function AboutSection() {
         >
           <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
             <span>🎮</span>
-            When I'm Not Coding
+            When I&apos;m Not Coding
           </h3>
           <div className="grid md:grid-cols-3 gap-6 text-gray-300">
             <div>

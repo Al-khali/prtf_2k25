@@ -36,7 +36,7 @@ export const TerminalSection: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <span className="text-sm font-mono text-cyan-400">// Terminal</span>
+            <span className="text-sm font-mono text-cyan-400">{"// Terminal"}</span>
           </motion.div>
           
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">

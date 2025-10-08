@@ -230,7 +230,7 @@ Available categories:
                 </div>
 
                 <div className="text-white/60 text-xs mt-4">
-                  💡 Tip: Try 'cat ml-projects.json' to see ML projects
+                  💡 Tip: Try &apos;cat ml-projects.json&apos; to see ML projects
                 </div>
               </div>
             ),

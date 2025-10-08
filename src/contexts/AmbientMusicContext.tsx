@@ -11,18 +11,19 @@ interface AmbientMusicContextType {
 }
 
 const AmbientMusicContext = createContext<AmbientMusicContextType | undefined>(undefined);
+const INITIAL_VOLUME = 0.3;
 
 export function AmbientMusicProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolumeState] = useState(0.3); // 30% volume par défaut
+  const [volume, setVolumeState] = useState(INITIAL_VOLUME); // 30% volume par défaut
 
   useEffect(() => {
     // Créer l'élément audio
     const audio = new Audio('/assets/music/ambient-pad-starry-nights_172bpm_B_major.wav');
     audio.loop = true;
-    audio.volume = volume;
+  audio.volume = INITIAL_VOLUME;
     audioRef.current = audio;
 
     // Démarrer la musique après interaction utilisateur

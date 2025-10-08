@@ -9,8 +9,8 @@
     "export": "next build && next export",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest",
-    "test:watch": "jest --watch",
+  "test": "jest --config jest.config.mjs",
+  "test:watch": "jest --config jest.config.mjs --watch",
     "lighthouse": "npm run build && npm run start & sleep 5 && npx lighthouse http://localhost:3000 --view && kill %1",
     "audit": "npm audit --production"
   },

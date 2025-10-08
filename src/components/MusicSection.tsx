@@ -56,7 +56,7 @@ export default function MusicSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <span className="text-sm font-mono text-amber-400">// Music</span>
+            <span className="text-sm font-mono text-amber-400">{"// Music"}</span>
           </motion.div>
 
           <motion.h2

@@ -91,7 +91,7 @@ export default function CTFReward({ show, onClose }: CTFRewardProps) {
             CONGRATULATIONS!
           </p>
           <p className="text-gray-300 mb-6">
-            You've successfully completed all CTF challenges. You've proven your skills in
+            You&apos;ve successfully completed all CTF challenges. You&apos;ve proven your skills in
             decoding, cryptography, and hacker culture knowledge.
           </p>
 
@@ -101,8 +101,8 @@ export default function CTFReward({ show, onClose }: CTFRewardProps) {
               <div>
                 <div className="font-bold text-white">Ghost in the Shell</div>
                 <div className="text-sm text-gray-400">
-                  "If we all reacted the same way, we'd be predictable, and there's always more
-                  than one way to view a situation."
+                  &quot;If we all reacted the same way, we&apos;d be predictable, and there&apos;s always more
+                  than one way to view a situation.&quot;
                 </div>
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function CTFReward({ show, onClose }: CTFRewardProps) {
               <div>
                 <div className="font-bold text-white">Jurassic Park</div>
                 <div className="text-sm text-gray-400">
-                  "Ah ah ah, you didn't say the magic word!" - Dennis Nedry
+                  &quot;Ah ah ah, you didn&apos;t say the magic word!&quot; - Dennis Nedry
                 </div>
               </div>
             </div>
@@ -122,8 +122,8 @@ export default function CTFReward({ show, onClose }: CTFRewardProps) {
               <div>
                 <div className="font-bold text-white">The Matrix</div>
                 <div className="text-sm text-gray-400">
-                  "Unfortunately, no one can be told what the Matrix is. You have to see it for
-                  yourself."
+                  &quot;Unfortunately, no one can be told what the Matrix is. You have to see it for
+                  yourself.&quot;
                 </div>
               </div>
             </div>

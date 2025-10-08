@@ -90,7 +90,7 @@ export default function SkillBadge() {
             transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
           >
             <h4 className="text-lg font-semibold text-white mb-4">
-              <span className="text-cyan-400">// </span>
+              <span className="text-cyan-400">{"// "}</span>
               {category.name}
             </h4>
             <div className="flex flex-wrap gap-3">

@@ -33,11 +33,14 @@ export function useDeviceCapabilities(): DeviceCapabilities {
 
     // Check if low-end device
     // Heuristics: mobile + low memory or old device
+    const { deviceMemory } = navigator as Navigator & { deviceMemory?: number };
+    const hardwareConcurrency = typeof navigator.hardwareConcurrency === 'number'
+      ? navigator.hardwareConcurrency
+      : undefined;
+
     const isLowEnd = isMobile && (
-      // @ts-ignore - navigator.deviceMemory is not in all browsers
-      (navigator.deviceMemory && navigator.deviceMemory < 4) ||
-      // @ts-ignore - navigator.hardwareConcurrency
-      (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4)
+      (typeof deviceMemory === 'number' && deviceMemory < 4) ||
+      (typeof hardwareConcurrency === 'number' && hardwareConcurrency < 4)
     );
 
     // Check prefers-reduced-motion

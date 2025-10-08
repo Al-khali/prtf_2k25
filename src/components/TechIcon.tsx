@@ -15,9 +15,7 @@ import {
   SiGit,
   SiGithub,
   SiGitlab,
-  SiAmazonaws,
   SiGooglecloud,
-  SiMicrosoftazure,
   SiTerraform,
   SiApacheairflow,
   SiApachespark,
@@ -47,7 +45,6 @@ import {
   SiPrettier,
   SiJest,
   SiCypress,
-  SiPlaywright,
   SiStorybook,
   SiFramer,
   SiThreedotjs,
@@ -76,11 +73,9 @@ import {
   SiLinux,
   SiUbuntu,
   SiDebian,
-  SiArch,
   SiNixos,
   SiVim,
   SiNeovim,
-  SiVisualstudiocode,
   SiIntellijidea,
   SiPycharm,
   SiWebstorm,
@@ -88,7 +83,7 @@ import {
   SiInsomnia,
 } from 'react-icons/si';
 import { FaDatabase, FaServer, FaCloud, FaCode, FaTerminal } from 'react-icons/fa';
-import { DiMysql, DiRedis } from 'react-icons/di';
+import { DiMysql } from 'react-icons/di';
 
 /**
  * Mapping des noms de technos vers leurs icônes
@@ -172,9 +167,9 @@ const techIconMap: Record<string, IconType> = {
   'Grafana': SiGrafana,
   
   // Cloud
-  'AWS': SiAmazonaws,
+  'AWS': FaCloud,
   'GCP': SiGooglecloud,
-  'Azure': SiMicrosoftazure,
+  'Azure': FaCloud,
   'Vercel': SiVercel,
   'Netlify': SiNetlify,
   'Cloud': FaCloud,
@@ -190,7 +185,7 @@ const techIconMap: Record<string, IconType> = {
   'Prettier': SiPrettier,
   'Jest': SiJest,
   'Cypress': SiCypress,
-  'Playwright': SiPlaywright,
+  'Playwright': FaCode,
   'Storybook': SiStorybook,
   'Postman': SiPostman,
   'Insomnia': SiInsomnia,
@@ -209,12 +204,12 @@ const techIconMap: Record<string, IconType> = {
   'Linux': SiLinux,
   'Ubuntu': SiUbuntu,
   'Debian': SiDebian,
-  'Arch': SiArch,
+  'Arch': SiLinux,
   'NixOS': SiNixos,
   'Vim': SiVim,
   'Neovim': SiNeovim,
-  'VS Code': SiVisualstudiocode,
-  'VSCode': SiVisualstudiocode,
+  'VS Code': FaCode,
+  'VSCode': FaCode,
   'IntelliJ': SiIntellijidea,
   'PyCharm': SiPycharm,
   'WebStorm': SiWebstorm,

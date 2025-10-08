@@ -207,7 +207,7 @@ export const AITerminal: React.FC<AITerminalProps> = ({
             animate={{ opacity: 1, y: 0 }}
             className="text-gray-400 text-sm space-y-2"
           >
-            <p className="text-cyan-400 font-semibold">Welcome to Khalid's Interactive Terminal</p>
+            <p className="text-cyan-400 font-semibold">Welcome to Khalid&apos;s Interactive Terminal</p>
             <p>Type <span className="text-green-400 font-semibold">help</span> to see available commands.</p>
             <p className="text-xs text-gray-500 mt-4">
               💡 Try: <span className="text-cyan-400">neofetch</span>, <span className="text-cyan-400">fastfetch</span>, <span className="text-cyan-400">ls</span>, <span className="text-cyan-400">whoami</span>

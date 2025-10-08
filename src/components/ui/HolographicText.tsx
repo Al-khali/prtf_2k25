@@ -48,7 +48,7 @@ export const HolographicText = React.forwardRef<HTMLElement, HolographicTextProp
     },
     ref
   ) => {
-    const Component = motion[as] as any;
+  const Component = motion[as] as typeof motion[keyof typeof motion];
     const gradientClass = gradientMap[gradient];
 
     return (

@@ -1,500 +1,168 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  /* Core palette */
-  --deep-void: #0c0d10;
-  --void-darker: #080a0d;
-  --void-lighter: #12141a;
-  --void-secondary: #1a1b1e;
-  --void-tertiary: #2a2b2e;
-  
-  /* Holographic gradients */
-  --holo-cyan: #00f5ff;
-  --holo-magenta: #ff00ff;
-  --holo-violet: #8b00ff;
-  --holo-gold: #ffd700;
-  
-  /* Terminal accents */
-  --terminal-green: #00ff9f;
-  --terminal-blue: #00d4ff;
-  --mint-green: #50fa7b;
-  --glacier-blue: #8be9fd;
-  --electric-purple: #bd93f9;
-  
-  /* Glass & glow effects */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-bg-intense: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-border-intense: rgba(255, 255, 255, 0.15);
-  --glass-blur: 20px;
-  --glass-blur-intense: 30px;
-  
-  --glow-cyan: rgba(0, 255, 255, 0.3);
-  --glow-magenta: rgba(255, 0, 255, 0.3);
-  --glow-violet: rgba(139, 0, 255, 0.3);
-  --glow-gold: rgba(255, 215, 0, 0.3);
-  
-  /* Text colors */
-  --text-primary: #ffffff;
-  --text-secondary: #e0e0e0;
-  --text-tertiary: #a0a0a0;
-  --text-muted: #707070;
-  
-  /* Animation durations */
-  --duration-fast: 150ms;
-  --duration-normal: 300ms;
-  --duration-slow: 500ms;
-  --duration-slower: 800ms;
-  
-  /* Animation easings */
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  
-  /* Legacy vars for compatibility */
-  --background: var(--deep-void);
-  --foreground: var(--text-primary);
-}
-
-@theme inline {
-  /* Colors */
-  --color-background: var(--deep-void);
-  --color-background-secondary: var(--void-secondary);
-  --color-background-tertiary: var(--void-tertiary);
-  --color-foreground: var(--text-primary);
-  
-  --color-holo-cyan: var(--holo-cyan);
-  --color-holo-magenta: var(--holo-magenta);
-  --color-holo-violet: var(--holo-violet);
-  --color-holo-gold: var(--holo-gold);
-  
-  --color-terminal-green: var(--terminal-green);
-  --color-terminal-blue: var(--terminal-blue);
-  --color-mint: var(--mint-green);
-  --color-glacier: var(--glacier-blue);
-  --color-purple: var(--electric-purple);
-  
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-tertiary: var(--text-tertiary);
-  --color-text-muted: var(--text-muted);
-  
-  /* Fonts */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'IBM Plex Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
-  --font-space: 'Space Grotesk', sans-serif;
-  
-  /* Shadows */
-  --shadow-glow-cyan: 0 0 20px var(--glow-cyan);
-  --shadow-glow-magenta: 0 0 20px var(--glow-magenta);
-  --shadow-glow-violet: 0 0 20px var(--glow-violet);
-  --shadow-glow-hover: 0 0 30px rgba(0, 255, 255, 0.4), 0 0 60px rgba(255, 0, 255, 0.2);
-  
-  /* Border radius */
-  --radius-sm: 0.5rem;
-  --radius-md: 1rem;
-  --radius-lg: 1.5rem;
-  --radius-xl: 2rem;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  --background-dark: #05050a;
+  --text-primary: #eaeaea;
+  --text-secondary: #a0a0a0;
+  --accent-primary: #6a5acd;
+  --accent-secondary: #00bfff;
+  --border-color: #2a2a3a;
+  --content-max-width: 1200px;
+  --section-spacing: 6rem;
 }
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--deep-void);
-  color: #ffffff;
-  overflow-x: hidden;
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--background-dark);
+  color: var(--text-primary);
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--void-darker);
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(45deg, var(--holo-cyan), var(--holo-magenta));
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(45deg, var(--holo-magenta), var(--holo-violet));
-}
-
-/* Holographic text effect */
-.holo-text {
-  background: linear-gradient(45deg, var(--holo-cyan), var(--holo-magenta), var(--holo-violet), var(--holo-gold));
-  background-size: 400% 400%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: holo-shift 8s ease-in-out infinite;
-}
-
-@keyframes holo-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* Glassmorphism utilities */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-}
-
-.glass-intense {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-}
-
-/* Glow effects */
-.glow-cyan {
-  box-shadow: 0 0 20px var(--glow-cyan);
-}
-
-.glow-magenta {
-  box-shadow: 0 0 20px var(--glow-magenta);
-}
-
-.glow-hover {
-  transition: all 0.3s ease;
-}
-
-.glow-hover:hover {
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.4), 0 0 60px rgba(255, 0, 255, 0.2);
-  transform: translateY(-2px);
-}
-
-/* Terminal styling */
-.terminal-font {
-  font-family: 'IBM Plex Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
-}
-
-.terminal-cursor::after {
-  content: '▋';
-  animation: blink 1s infinite;
-  color: var(--mint-green);
-}
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-/* Particle system base */
-.particles-container {
-  position: fixed;
-  top: 0;
-  left: 0;
+main {
   width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
 }
 
-/* Floating animations */
-.float {
-  animation: float 6s ease-in-out infinite;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+a:hover,
+a:focus-visible {
+  color: var(--accent-secondary);
 }
 
-.float-delayed {
-  animation: float 6s ease-in-out infinite 2s;
-}
-
-/* Holographic borders */
-.holo-border {
-  position: relative;
-  border: 1px solid transparent;
-  background: linear-gradient(var(--deep-void), var(--deep-void)) padding-box,
-              linear-gradient(45deg, var(--holo-cyan), var(--holo-magenta), var(--holo-violet)) border-box;
-}
-
-/* Selection styling */
-::selection {
-  background: var(--holo-cyan);
-  color: var(--deep-void);
-}
-
-::-moz-selection {
-  background: var(--holo-cyan);
-  color: var(--deep-void);
-}
-
-/* Parallax and scroll effects */
-.parallax-section {
-  position: relative;
-  overflow: hidden;
-}
-
-.parallax-bg {
-  position: absolute;
-  top: -10%;
-  left: 0;
-  width: 100%;
-  height: 120%;
-  z-index: -1;
-}
-
-/* Scroll-triggered animations */
-.scroll-fade-in {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.6s var(--ease-smooth), transform 0.6s var(--ease-smooth);
-}
-
-.scroll-fade-in.in-view {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.scroll-slide-left {
-  opacity: 0;
-  transform: translateX(-50px);
-  transition: opacity 0.6s var(--ease-smooth), transform 0.6s var(--ease-smooth);
-}
-
-.scroll-slide-left.in-view {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.scroll-slide-right {
-  opacity: 0;
-  transform: translateX(50px);
-  transition: opacity 0.6s var(--ease-smooth), transform 0.6s var(--ease-smooth);
-}
-
-.scroll-slide-right.in-view {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.scroll-scale-in {
-  opacity: 0;
-  transform: scale(0.9);
-  transition: opacity 0.6s var(--ease-smooth), transform 0.6s var(--ease-smooth);
-}
-
-.scroll-scale-in.in-view {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Accessibility - Focus Indicators */
-/* Remove default focus outline for mouse users */
-*:focus {
-  outline: none;
-}
-
-/* Visible focus indicators for keyboard navigation */
-*:focus-visible {
-  outline: 2px solid var(--holo-cyan);
-  outline-offset: 4px;
-  border-radius: 4px;
-  transition: outline-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-/* Enhanced focus for interactive elements */
-button:focus-visible,
-a:focus-visible,
-[role="button"]:focus-visible,
-[role="link"]:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
-[tabindex]:not([tabindex="-1"]):focus-visible {
-  outline: 2px solid var(--holo-cyan);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(0, 245, 255, 0.2);
-}
-
-/* High contrast focus for glass elements */
-.glass:focus-visible,
-.glass-intense:focus-visible,
-.holo-border:focus-visible {
-  outline: 3px solid var(--holo-cyan);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 6px rgba(0, 245, 255, 0.3), 0 0 20px var(--glow-cyan);
-}
-
-/* Focus for cards and interactive containers */
-[role="article"]:focus-visible,
-[role="region"]:focus-visible,
-.project-card:focus-visible {
-  outline: 2px solid var(--holo-cyan);
-  outline-offset: 4px;
-  box-shadow: 0 0 0 4px rgba(0, 245, 255, 0.15);
-}
-
-/* Focus for navigation elements */
-nav a:focus-visible,
-nav button:focus-visible {
-  outline: 2px solid var(--terminal-green);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(0, 255, 159, 0.2);
-}
-
-/* Minimum touch target sizes for accessibility */
 button,
-a,
-[role="button"],
-[role="link"],
-input[type="button"],
-input[type="submit"],
-input[type="reset"] {
-  min-width: 48px;
-  min-height: 48px;
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.section-container {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--section-spacing) 1.5rem;
+}
+
+.section-heading {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.section-subtext {
+  color: var(--text-secondary);
+}
+
+.button-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  background-image: linear-gradient(
+    to right,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
+  color: #05050a;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 15px 35px rgba(0, 191, 255, 0.2);
 }
 
-/* Larger touch targets on mobile */
-@media (max-width: 768px) {
-  button,
-  a,
-  [role="button"],
-  [role="link"],
-  input[type="button"],
-  input[type="submit"],
-  input[type="reset"] {
-    min-width: 56px;
-    min-height: 56px;
-  }
+.button-primary:hover,
+.button-primary:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 45px rgba(0, 191, 255, 0.25);
 }
 
-/* Screen reader only utility */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+.button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
-.sr-only-focusable:focus,
-.sr-only-focusable:active {
-  position: static;
-  width: auto;
-  height: auto;
-  overflow: visible;
-  clip: auto;
-  white-space: normal;
+.button-secondary:hover,
+.button-secondary:focus-visible {
+  color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+  transform: translateY(-2px);
 }
 
-/* Skip links */
-.skip-links a {
-  position: absolute;
-  left: -9999px;
-  z-index: 999;
-  padding: 1em;
-  background-color: var(--deep-void);
-  color: var(--holo-cyan);
-  text-decoration: none;
-  border: 2px solid var(--holo-cyan);
-  border-radius: 8px;
+.card-surface {
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  background: rgba(10, 10, 20, 0.75);
+  backdrop-filter: blur(18px);
 }
 
-.skip-links a:focus {
-  left: 50%;
-  transform: translateX(-50%);
-  top: 1rem;
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--border-color);
+  padding: 0.35rem 0.9rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
-/* Keyboard navigation indicators */
-.keyboard-user *:focus {
-  outline: 2px solid var(--holo-cyan);
-  outline-offset: 4px;
+form label {
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  
-  .scroll-fade-in,
-  .scroll-slide-left,
-  .scroll-slide-right,
-  .scroll-scale-in {
-    opacity: 1;
-    transform: none;
-  }
+input,
+textarea {
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background-color: rgba(5, 5, 10, 0.92);
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* High contrast mode support */
-@media (prefers-contrast: high) {
+input:focus-visible,
+textarea:focus-visible {
+  border-color: var(--accent-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 191, 255, 0.25);
+  outline: none;
+}
+
+@media (max-width: 640px) {
   :root {
-    --glass-bg: rgba(255, 255, 255, 0.15);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --holo-cyan: #00ffff;
-    --terminal-green: #00ff00;
+    --section-spacing: 4.5rem;
   }
-  
-  .glass,
-  .glass-intense {
-    border-width: 2px;
-  }
-  
-  /* Enhanced focus indicators for high contrast */
-  *:focus-visible {
-    outline-width: 3px;
-    outline-color: var(--terminal-green);
-  }
-  
-  button:focus-visible,
-  a:focus-visible,
-  [role="button"]:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible,
-  select:focus-visible {
-    outline-width: 3px;
-    outline-color: var(--terminal-green);
-    box-shadow: 0 0 0 6px rgba(0, 255, 0, 0.3);
-  }
-  
-  .glass:focus-visible,
-  .glass-intense:focus-visible {
-    outline-width: 4px;
-    outline-color: var(--terminal-green);
-    box-shadow: 0 0 0 8px rgba(0, 255, 0, 0.4);
+
+  .section-container {
+    padding-inline: 1.25rem;
   }
 }

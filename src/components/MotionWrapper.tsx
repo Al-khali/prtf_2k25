@@ -27,7 +27,7 @@ export default function MotionWrapper({
 }: MotionWrapperProps) {
   const prefersReducedMotion = useReducedMotion();
 
-  const MotionComponent = motion[as] as any;
+  const MotionComponent = motion[as] as typeof motion[keyof typeof motion];
 
   // If user prefers reduced motion, render without animations
   if (prefersReducedMotion && respectReducedMotion) {
@@ -58,7 +58,9 @@ export default function MotionWrapper({
  * @param variants - Animation variants
  * @returns Variants or empty object if reduced motion is preferred
  */
-export function useAccessibleVariants<T extends Record<string, any>>(variants: T): T | {} {
+export function useAccessibleVariants<T extends Record<string, unknown>>(
+  variants: T,
+): T | Record<string, never> {
   const prefersReducedMotion = useReducedMotion();
   return prefersReducedMotion ? {} : variants;
 }

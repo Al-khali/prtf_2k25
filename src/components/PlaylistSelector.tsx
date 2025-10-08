@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Playlist, Track } from '@/lib/audio';
+import { Playlist } from '@/lib/audio';
 
 interface PlaylistSelectorProps {
   playlists: Playlist[];

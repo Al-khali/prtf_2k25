@@ -63,7 +63,7 @@ export function ProjectsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <span className="text-sm font-mono text-cyan-400">// Projects</span>
+            <span className="text-sm font-mono text-cyan-400">{"// Projects"}</span>
           </motion.div>
           
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
@@ -122,8 +122,15 @@ export function ProjectsSection() {
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {filteredProjects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
+          {filteredProjects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              imageUrl={project.image}
+              title={project.title}
+              description={project.description}
+              tags={project.tags}
+              projectUrl={project.link ?? project.github ?? '#'}
+            />
           ))}
         </div>
 

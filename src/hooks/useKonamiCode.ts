@@ -15,7 +15,7 @@ const KONAMI_CODE = [
 
 export function useKonamiCode(onSuccess?: () => void) {
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [keySequence, setKeySequence] = useState<string[]>([]);
+  const [, setKeySequence] = useState<string[]>([]);
 
   useEffect(() => {
     // Check localStorage for existing unlock state
@@ -113,6 +113,6 @@ function playUnlockSound() {
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 0.5);
   } catch (error) {
-    console.log('Audio not supported');
+    console.log('Audio not supported', error);
   }
 }

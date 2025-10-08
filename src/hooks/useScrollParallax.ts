@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useScroll, useTransform, MotionValue } from 'framer-motion';
+import { useScroll, useTransform } from 'framer-motion';
 
 interface ParallaxOptions {
   speed?: number; // Multiplier for parallax effect (0.5 = half speed, 2 = double speed)

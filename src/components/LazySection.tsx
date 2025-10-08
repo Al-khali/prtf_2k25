@@ -1,6 +1,6 @@
 'use client';
 
-import { lazy, Suspense, ReactNode, ComponentType } from 'react';
+import { Suspense, ReactNode } from 'react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { ErrorBoundary } from './ErrorBoundary';
 
