@@ -3,17 +3,17 @@
  * Organized architecture following design.md
  */
 
-// Refined v2 sections - professional, less flashy
-export { default as HeroSection } from './HeroSection-v2';
-export { default as AboutSection } from './AboutSection-v2';
-export { default as ProjectsSection } from './ProjectsSection-v2';
-export { default as ContactSection } from './ContactSection-v2';
+// Ultra clean v3 sections - minimal and professional
+export { default as HeroSection } from './HeroSection-v3';
+export { default as AboutSection } from './AboutSection-v3';
+export { default as ProjectsSection } from './ProjectsSection-v3';
+export { default as ContactSection } from './ContactSection-v3';
 
-// Original sections (backup)
-// export { default as HeroSection } from './HeroSection';
-// export { default as AboutSection } from './AboutSection';
-// export { default as ProjectsSection } from './ProjectsSection';
-// export { default as ContactSection } from './ContactSection';
+// v2 sections (backup)
+// export { default as HeroSection } from './HeroSection-v2';
+// export { default as AboutSection } from './AboutSection-v2';
+// export { default as ProjectsSection } from './ProjectsSection-v2';
+// export { default as ContactSection } from './ContactSection-v2';
 
 // Terminal Section uses existing component (will be enhanced)
 // export { default as TerminalSection } from './TerminalSection';

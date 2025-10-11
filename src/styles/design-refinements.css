@@ -1,84 +1,85 @@
 /**
- * Design Refinements - More subtle and professional
+ * Design Refinements v3 - Ultra Clean & Professional
  * 
- * Changes:
- * - Reduced color saturation (70% opacity)
- * - Increased section spacing (py-32 instead of py-20)
- * - Softer gradients (15% opacity instead of 20%)
- * - Better visual hierarchy
- * - Less glow effects
- * - More whitespace
+ * Philosophy: Less is More
+ * - Minimal colors (only cyan accents)
+ * - Maximum readability
+ * - Ultra subtle effects
+ * - Focus on content, not decoration
  */
 
 @layer utilities {
-  /* Subtle glass effect - less intense */
+  /* Minimal glass effect */
   .glass-panel-subtle {
-    @apply bg-white/3 backdrop-blur-md border border-white/8;
+    background-color: rgb(255 255 255 / 0.02);
+    backdrop-filter: blur(8px);
+    border-width: 1px;
+    border-color: rgb(255 255 255 / 0.05);
   }
 
-  /* Softer gradients for backgrounds */
+  /* Very subtle gradients */
   .gradient-soft-cyan {
-    background: linear-gradient(135deg, rgba(0, 245, 255, 0.08) 0%, transparent 100%);
+    background: linear-gradient(135deg, rgba(0, 245, 255, 0.03) 0%, transparent 100%);
   }
 
   .gradient-soft-fuchsia {
-    background: linear-gradient(135deg, rgba(217, 70, 239, 0.08) 0%, transparent 100%);
+    background: linear-gradient(135deg, rgba(217, 70, 239, 0.03) 0%, transparent 100%);
   }
 
-  /* Reduced glow effects */
+  /* Minimal glow */
   .glow-subtle-cyan {
-    box-shadow: 0 0 20px rgba(0, 245, 255, 0.15);
+    box-shadow: 0 0 15px rgba(0, 245, 255, 0.08);
   }
 
   .glow-subtle-fuchsia {
-    box-shadow: 0 0 20px rgba(217, 70, 239, 0.15);
+    box-shadow: 0 0 15px rgba(217, 70, 239, 0.08);
   }
 
-  /* Better text hierarchy */
+  /* Clean text hierarchy */
   .text-primary-soft {
-    @apply text-gray-100;
+    color: rgb(245 245 245);
   }
 
   .text-secondary-soft {
-    @apply text-gray-400;
+    color: rgb(163 163 163);
   }
 
   .text-muted-soft {
-    @apply text-gray-500;
+    color: rgb(115 115 115);
   }
 
-  /* Refined accent colors */
+  /* Subtle accent colors */
   .accent-cyan-soft {
-    @apply text-cyan-400/80;
+    color: rgb(34 211 238 / 0.7);
   }
 
   .accent-fuchsia-soft {
-    @apply text-fuchsia-400/80;
+    color: rgb(217 70 239 / 0.7);
   }
 
   .accent-green-soft {
-    @apply text-green-400/80;
+    color: rgb(74 222 128 / 0.7);
   }
 }
 
-/* Override existing overly bright styles */
+/* Minimal glass panel override */
 .glass-panel {
-  background-color: rgb(255 255 255 / 0.05);
-  backdrop-filter: blur(16px);
+  background-color: rgb(255 255 255 / 0.03);
+  backdrop-filter: blur(12px);
   border-width: 1px;
-  border-color: rgb(255 255 255 / 0.1);
+  border-color: rgb(255 255 255 / 0.08);
 }
 
-/* Tone down existing holographic effects */
+/* Barely visible holographic effects */
 .holographic-text {
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
-/* Reduce scanlines intensity */
+/* Ultra minimal scanlines */
 .scanlines {
-  opacity: 0.03;
+  opacity: 0.01;
 }
 
 .crt {
-  opacity: 0.5;
+  opacity: 0.3;
 }
