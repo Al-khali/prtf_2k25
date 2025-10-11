@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TerminalCommand } from '@/types';
 import { projects } from '@/lib/projects-data';
 
@@ -10,13 +10,16 @@ import { projects } from '@/lib/projects-data';
 // Animated coffee component
 const AnimatedCoffee: React.FC = () => {
   const [frame, setFrame] = useState(0);
-  
-  const frames = [
-    '☕',
-    '☕️',
-    '🫖',
-    '☕',
-  ];
+
+  const frames = useMemo(
+    () => [
+      '☕',
+      '☕️',
+      '🫖',
+      '☕',
+    ],
+    []
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -24,7 +27,7 @@ const AnimatedCoffee: React.FC = () => {
     }, 300);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [frames.length]);
 
   return (
     <div className="text-2xl">

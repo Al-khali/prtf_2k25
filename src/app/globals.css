@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Import du nouveau design system */
+@import '../styles/design-system.css';
+@import '../styles/design-refinements.css';
+
 :root {
   --background-dark: #05050a;
   --text-primary: #eaeaea;

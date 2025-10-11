@@ -34,7 +34,7 @@ EXEMPLE DE REFUS :
 
 class GeminiService {
   private genAI: GoogleGenerativeAI | null = null;
-  private model: any = null;
+  private model: ReturnType<GoogleGenerativeAI['getGenerativeModel']> | null = null;
   private requestCount = 0;
   private readonly MAX_REQUESTS = 20; // Limite quotidienne
   private lastReset = Date.now();

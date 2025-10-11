@@ -138,7 +138,13 @@ export class AudioManager {
     if (!this.audio || this.analyser) return this.analyser;
 
     try {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      type WindowWithWebkit = Window & typeof globalThis & {
+        webkitAudioContext?: typeof AudioContext;
+      };
+      const AudioContextClass = window.AudioContext || (window as WindowWithWebkit).webkitAudioContext;
+      if (!AudioContextClass) return null;
+      
+      this.audioContext = new AudioContextClass();
       this.analyser = this.audioContext.createAnalyser();
       this.analyser.fftSize = 256;
       

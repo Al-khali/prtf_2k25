@@ -1,0 +1,84 @@
+/**
+ * Design Refinements - More subtle and professional
+ * 
+ * Changes:
+ * - Reduced color saturation (70% opacity)
+ * - Increased section spacing (py-32 instead of py-20)
+ * - Softer gradients (15% opacity instead of 20%)
+ * - Better visual hierarchy
+ * - Less glow effects
+ * - More whitespace
+ */
+
+@layer utilities {
+  /* Subtle glass effect - less intense */
+  .glass-panel-subtle {
+    @apply bg-white/3 backdrop-blur-md border border-white/8;
+  }
+
+  /* Softer gradients for backgrounds */
+  .gradient-soft-cyan {
+    background: linear-gradient(135deg, rgba(0, 245, 255, 0.08) 0%, transparent 100%);
+  }
+
+  .gradient-soft-fuchsia {
+    background: linear-gradient(135deg, rgba(217, 70, 239, 0.08) 0%, transparent 100%);
+  }
+
+  /* Reduced glow effects */
+  .glow-subtle-cyan {
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.15);
+  }
+
+  .glow-subtle-fuchsia {
+    box-shadow: 0 0 20px rgba(217, 70, 239, 0.15);
+  }
+
+  /* Better text hierarchy */
+  .text-primary-soft {
+    @apply text-gray-100;
+  }
+
+  .text-secondary-soft {
+    @apply text-gray-400;
+  }
+
+  .text-muted-soft {
+    @apply text-gray-500;
+  }
+
+  /* Refined accent colors */
+  .accent-cyan-soft {
+    @apply text-cyan-400/80;
+  }
+
+  .accent-fuchsia-soft {
+    @apply text-fuchsia-400/80;
+  }
+
+  .accent-green-soft {
+    @apply text-green-400/80;
+  }
+}
+
+/* Override existing overly bright styles */
+.glass-panel {
+  background-color: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(16px);
+  border-width: 1px;
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+/* Tone down existing holographic effects */
+.holographic-text {
+  opacity: 0.9;
+}
+
+/* Reduce scanlines intensity */
+.scanlines {
+  opacity: 0.03;
+}
+
+.crt {
+  opacity: 0.5;
+}

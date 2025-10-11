@@ -84,10 +84,10 @@ export function getReducedMotionDuration(
  * @param prefersReducedMotion - Whether user prefers reduced motion
  * @returns Transition config with adjusted duration
  */
-export function getReducedMotionTransition(
-  normalTransition: any,
+export function getReducedMotionTransition<T extends Record<string, unknown>>(
+  normalTransition: T,
   prefersReducedMotion: boolean
-): any {
+): T {
   if (prefersReducedMotion) {
     return {
       ...normalTransition,

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { MusicProvider } from "@/contexts/MusicContext";
@@ -11,6 +11,12 @@ const inter = Inter({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#05050A',
+};
+
 export const metadata: Metadata = {
   title: "Khalid | Data Engineer & Creative Technologist",
   description:
@@ -18,8 +24,6 @@ export const metadata: Metadata = {
   keywords:
     "data engineer, creative technologist, portfolio, next.js, tailwind, data pipeline, IA, expérience immersive",
   authors: [{ name: "Khalid" }],
-  viewport: "width=device-width, initial-scale=1",
-  themeColor: "#05050A",
   openGraph: {
     title: "Khalid | Data Engineer & Creative Technologist",
     description:
@@ -46,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
       <head>
         {/* Critical CSS inlined for immediate render */}
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />

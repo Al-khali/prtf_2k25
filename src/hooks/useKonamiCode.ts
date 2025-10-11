@@ -97,7 +97,13 @@ export function useKonamiCode(onSuccess?: () => void) {
 function playUnlockSound() {
   try {
     // Create a simple beep sound using Web Audio API
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    type WindowWithWebkit = Window & typeof globalThis & {
+      webkitAudioContext?: typeof AudioContext;
+    };
+    const AudioContextClass = window.AudioContext || (window as WindowWithWebkit).webkitAudioContext;
+    if (!AudioContextClass) return;
+    
+    const audioContext = new AudioContextClass();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
 

@@ -55,7 +55,12 @@ export class PerformanceMonitor {
 
     // Add memory info if available
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
+      interface PerformanceMemory {
+        usedJSHeapSize: number;
+        totalJSHeapSize: number;
+        jsHeapSizeLimit: number;
+      }
+      const memory = (performance as Performance & { memory: PerformanceMemory }).memory;
       metrics.memory = memory.usedJSHeapSize / 1048576; // Convert to MB
     }
 
@@ -100,7 +105,10 @@ export function detectDeviceTier(): 'high' | 'medium' | 'low' {
   // Check memory if available
   let memory = 4; // Default assumption
   if ('deviceMemory' in navigator) {
-    memory = (navigator as any).deviceMemory;
+    interface NavigatorMemory {
+      deviceMemory: number;
+    }
+    memory = (navigator as Navigator & NavigatorMemory).deviceMemory;
   }
   
   // Check if mobile

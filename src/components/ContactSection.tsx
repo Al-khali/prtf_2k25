@@ -12,7 +12,7 @@ const sectionVariants = {
     y: 0,
     transition: {
       duration: 0.8,
-      ease: 'easeOut',
+      ease: [0.6, 0.01, 0.05, 0.95] as const,
     },
   },
 };
@@ -24,7 +24,7 @@ const headingVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: 'easeOut',
+      ease: [0.6, 0.01, 0.05, 0.95] as const,
     },
   },
 };
@@ -36,7 +36,7 @@ const contentVariants = {
     transition: {
       duration: 0.6,
       delay: 0.2,
-      ease: 'easeOut',
+      ease: [0.6, 0.01, 0.05, 0.95] as const,
     },
   },
 };
